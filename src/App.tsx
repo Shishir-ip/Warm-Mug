@@ -141,46 +141,46 @@ function Header({ cartCount, onCartClick, onAdminClick, onAccountClick, theme, o
   onThemeToggle: () => void;
 }) {
   return (
-    <header className="nb-card sticky top-0 z-40 m-4">
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-[var(--accent-yellow)] border-[var(--border-width)] border-[var(--border-color)] flex items-center justify-center">
-            <Coffee className="w-7 h-7" strokeWidth={3} />
+    <header className="nb-card sticky top-0 z-40 m-2 sm:m-4">
+      <div className="flex items-center justify-between p-2 sm:p-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[var(--accent-yellow)] border-[var(--border-width)] border-[var(--border-color)] flex items-center justify-center flex-shrink-0">
+            <Coffee className="w-5 h-5 sm:w-7 sm:h-7" strokeWidth={3} />
           </div>
-          <div>
-            <h1 className="nb-heading text-2xl">WARM MUG</h1>
-            <p className="text-xs font-bold uppercase tracking-wider">Specialty Coffee</p>
+          <div className="min-w-0">
+            <h1 className="nb-heading text-lg sm:text-2xl truncate">WARM MUG</h1>
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider hidden sm:block">Specialty Coffee</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           <button
             onClick={onThemeToggle}
-            className="nb-button-secondary p-3"
+            className="nb-button-secondary p-2 sm:p-3"
             title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
-            {theme === 'light' ? <Moon className="w-5 h-5" strokeWidth={3} /> : <Sun className="w-5 h-5" strokeWidth={3} />}
+            {theme === 'light' ? <Moon className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} /> : <Sun className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />}
           </button>
 
           <button
             onClick={onAdminClick}
-            className="nb-button-secondary p-3"
+            className="nb-button-secondary p-2 sm:p-3 hidden sm:block"
             title="Admin Dashboard"
           >
-            <Shield className="w-5 h-5" strokeWidth={3} />
+            <Shield className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
           </button>
 
-          <button onClick={onAccountClick} className="nb-button-secondary p-3">
-            <User className="w-5 h-5" strokeWidth={3} />
+          <button onClick={onAccountClick} className="nb-button-secondary p-2 sm:p-3">
+            <User className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
           </button>
 
           <button
             onClick={onCartClick}
-            className="nb-button p-3 relative"
+            className="nb-button p-2 sm:p-3 relative"
           >
-            <ShoppingBag className="w-5 h-5" strokeWidth={3} />
+            <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 w-6 h-6 bg-[var(--accent-red)] text-white border-2 border-[var(--border-color)] flex items-center justify-center text-xs font-black animate-bounce-in">
+              <span className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-[var(--accent-red)] text-white border-2 border-[var(--border-color)] flex items-center justify-center text-[10px] sm:text-xs font-black animate-bounce-in">
                 {cartCount}
               </span>
             )}
@@ -205,9 +205,9 @@ function ProductCard({ product, onAddToCart, onViewDetails }: {
     : product.price;
 
   return (
-    <div className="nb-card overflow-hidden group">
+    <div className="nb-card overflow-hidden group flex flex-col">
       <div
-        className="aspect-square overflow-hidden border-b-[var(--border-width)] border-[var(--border-color)] cursor-pointer relative"
+        className="aspect-square overflow-hidden border-b-[var(--border-width)] border-[var(--border-color)] cursor-pointer relative flex-shrink-0"
         onClick={() => onViewDetails(product)}
       >
         <img
@@ -216,8 +216,8 @@ function ProductCard({ product, onAddToCart, onViewDetails }: {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
         {hasDiscount && (
-          <div className="absolute top-3 right-3">
-            <span className="nb-badge nb-badge-red px-3 py-1">
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
+            <span className="nb-badge nb-badge-red px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm">
               {product.discountType === 'percentage'
                 ? `${product.discountValue}% OFF`
                 : `$${product.discountValue} OFF`}
@@ -225,49 +225,54 @@ function ProductCard({ product, onAddToCart, onViewDetails }: {
           </div>
         )}
       </div>
-      <div className="p-4">
+      <div className="p-3 sm:p-4 flex flex-col flex-1">
         <div className="mb-2">
-          <span className="nb-badge inline-block mb-2">{product.category}</span>
+          <span className="nb-badge inline-block mb-2 text-xs">{product.category}</span>
         </div>
-        <h3 className="nb-heading text-xl mb-2 cursor-pointer hover:text-[var(--accent-yellow)] transition-colors" onClick={() => onViewDetails(product)}>
+        <h3 
+          className="nb-heading text-base sm:text-xl mb-2 cursor-pointer hover:text-[var(--accent-yellow)] transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]" 
+          onClick={() => onViewDetails(product)}
+          title={product.name}
+        >
           {product.name}
         </h3>
-        <p className="text-sm mb-3 text-[var(--text-secondary)]">{product.description}</p>
+        <p className="text-xs sm:text-sm mb-3 text-[var(--text-secondary)] line-clamp-2">{product.description}</p>
 
         <div className="flex items-center gap-2 mb-3">
           <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
-            <span className="text-sm font-bold">{product.rating}</span>
+            <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
+            <span className="text-xs sm:text-sm font-bold">{product.rating}</span>
           </div>
           <span className="text-xs text-[var(--text-muted)]">({product.reviews})</span>
         </div>
 
         <div className="flex flex-wrap gap-1 mb-4">
-          {product.notes.slice(0, 3).map(note => (
-            <span key={note} className="text-xs px-2 py-1 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] font-bold">
+          {product.notes.slice(0, 2).map(note => (
+            <span key={note} className="text-xs px-2 py-0.5 sm:py-1 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] font-bold">
               {note}
             </span>
           ))}
         </div>
 
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-center justify-between gap-2 mt-auto">
+          <div className="flex-1 min-w-0">
             {hasDiscount && (
-              <span className="text-sm line-through text-[var(--text-muted)] mr-2">
+              <span className="text-xs sm:text-sm line-through text-[var(--text-muted)] mr-1 sm:mr-2 block sm:inline">
                 ${product.originalPrice!.toFixed(2)}
               </span>
             )}
-            <span className="text-2xl font-black">${finalPrice.toFixed(2)}</span>
+            <span className="text-lg sm:text-2xl font-black block sm:inline">${finalPrice.toFixed(2)}</span>
           </div>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onAddToCart(product);
             }}
-            className="nb-button px-4 py-2 flex items-center gap-2"
+            className="nb-button px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0"
           >
-            <Plus className="w-4 h-4" strokeWidth={3} />
-            ADD
+            <Plus className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={3} />
+            <span className="hidden sm:inline">ADD</span>
+            <span className="sm:hidden">+</span>
           </button>
         </div>
       </div>
@@ -290,14 +295,14 @@ function ProductDetailModal({ product, onClose, onAddToCart }: {
     : product.price;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="nb-card relative max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-bounce-in">
+      <div className="nb-card relative max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto animate-bounce-in">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 nb-button-secondary p-2 z-10"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 nb-button-secondary p-2 z-10"
         >
-          <X className="w-5 h-5" strokeWidth={3} />
+          <X className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
         </button>
 
         <div className="grid md:grid-cols-2 gap-0">
@@ -305,63 +310,63 @@ function ProductDetailModal({ product, onClose, onAddToCart }: {
             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
           </div>
 
-          <div className="p-6">
-            <span className="nb-badge inline-block mb-3">{product.category}</span>
-            <h2 className="nb-heading text-3xl mb-3">{product.name}</h2>
+          <div className="p-4 sm:p-6">
+            <span className="nb-badge inline-block mb-2 sm:mb-3 text-xs sm:text-sm">{product.category}</span>
+            <h2 className="nb-heading text-xl sm:text-3xl mb-2 sm:mb-3 leading-tight">{product.name}</h2>
 
-            <div className="flex items-center gap-4 mb-4 text-sm">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm">
               <div className="flex items-center gap-1">
-                <MapPin className="w-4 h-4" strokeWidth={2} />
+                <MapPin className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={2} />
                 <span>{product.origin}</span>
               </div>
               <div className="flex items-center gap-1">
-                <Flame className="w-4 h-4" strokeWidth={2} />
+                <Flame className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={2} />
                 <span>{product.roast} Roast</span>
               </div>
             </div>
 
-            <p className="text-[var(--text-secondary)] mb-4">{product.longDescription}</p>
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] mb-3 sm:mb-4">{product.longDescription}</p>
 
-            <div className="mb-4">
-              <h4 className="font-bold mb-2">Tasting Notes</h4>
-              <div className="flex flex-wrap gap-2">
+            <div className="mb-3 sm:mb-4">
+              <h4 className="font-bold mb-2 text-sm sm:text-base">Tasting Notes</h4>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {product.notes.map(note => (
-                  <span key={note} className="px-3 py-1 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] font-bold text-sm">
+                  <span key={note} className="px-2 py-0.5 sm:px-3 sm:py-1 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] font-bold text-xs sm:text-sm">
                     {note}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="mb-6">
-              <span className="text-sm text-[var(--text-muted)]">Package: </span>
-              <span className="font-bold">{product.weight}</span>
+            <div className="mb-4 sm:mb-6">
+              <span className="text-xs sm:text-sm text-[var(--text-muted)]">Package: </span>
+              <span className="font-bold text-sm sm:text-base">{product.weight}</span>
             </div>
 
-            <div className="border-t-2 border-[var(--border-color)] pt-4">
-              <div className="flex items-center justify-between mb-4">
+            <div className="border-t-2 border-[var(--border-color)] pt-3 sm:pt-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-3 sm:mb-4">
                 <div>
                   {hasDiscount && (
-                    <span className="text-lg line-through text-[var(--text-muted)] mr-2">
+                    <span className="text-sm sm:text-lg line-through text-[var(--text-muted)] mr-2 block sm:inline">
                       ${product.originalPrice!.toFixed(2)}
                     </span>
                   )}
-                  <span className="text-3xl font-black">${finalPrice.toFixed(2)}</span>
+                  <span className="text-2xl sm:text-3xl font-black block sm:inline">${finalPrice.toFixed(2)}</span>
                 </div>
 
-                <div className="flex items-center gap-3 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] px-3 py-2">
+                <div className="flex items-center gap-2 sm:gap-3 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] px-2 sm:px-3 py-1.5 sm:py-2">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="nb-button-secondary p-1"
                   >
-                    <Minus className="w-4 h-4" strokeWidth={3} />
+                    <Minus className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={3} />
                   </button>
-                  <span className="font-bold w-8 text-center">{quantity}</span>
+                  <span className="font-bold w-6 sm:w-8 text-center text-sm sm:text-base">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
                     className="nb-button-secondary p-1"
                   >
-                    <Plus className="w-4 h-4" strokeWidth={3} />
+                    <Plus className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={3} />
                   </button>
                 </div>
               </div>
@@ -371,9 +376,9 @@ function ProductDetailModal({ product, onClose, onAddToCart }: {
                   onAddToCart(product, quantity);
                   onClose();
                 }}
-                className="nb-button w-full py-3 flex items-center justify-center gap-2"
+                className="nb-button w-full py-2.5 sm:py-3 flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <ShoppingBag className="w-5 h-5" strokeWidth={3} />
+                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
                 ADD TO CART - ${(finalPrice * quantity).toFixed(2)}
               </button>
             </div>
@@ -682,44 +687,44 @@ function AppContent() {
       />
 
       {/* Hero Section */}
-      <section className="m-4">
-        <div className="nb-card p-8 md:p-12 bg-[var(--accent-yellow)]">
+      <section className="m-2 sm:m-4">
+        <div className="nb-card p-4 sm:p-8 md:p-12 bg-[var(--accent-yellow)]">
           <div className="max-w-2xl">
-            <h2 className="nb-heading text-4xl md:text-6xl mb-4">
+            <h2 className="nb-heading text-2xl sm:text-4xl md:text-6xl mb-3 sm:mb-4 leading-tight">
               EXCEPTIONAL COFFEE, DELIVERED TO YOU
             </h2>
-            <p className="text-lg mb-6 font-bold">
+            <p className="text-sm sm:text-lg mb-4 sm:mb-6 font-bold">
               Discover our curated selection of single-origin beans and artisan blends, sourced from the world's finest growing regions.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <span className="nb-badge nb-badge-pink px-4 py-2">☕ ETHICALLY SOURCED</span>
-              <span className="nb-badge nb-badge-blue px-4 py-2">🔥 ROASTED TO ORDER</span>
-              <span className="nb-badge nb-badge-green px-4 py-2">🚚 FREE SHIPPING 50+</span>
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              <span className="nb-badge nb-badge-pink px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">☕ ETHICALLY SOURCED</span>
+              <span className="nb-badge nb-badge-blue px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">🔥 ROASTED TO ORDER</span>
+              <span className="nb-badge nb-badge-green px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">🚚 FREE SHIPPING 50+</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* Search and Filters */}
-      <section className="m-4">
-        <div className="nb-card p-4 mb-6">
-          <div className="flex flex-col md:flex-row gap-4">
+      <section className="m-2 sm:m-4">
+        <div className="nb-card p-3 sm:p-4 mb-4 sm:mb-6">
+          <div className="flex flex-col gap-3 sm:gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" strokeWidth={2} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2} />
               <input
                 type="text"
                 placeholder="Search coffees..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="nb-input w-full pl-10 pr-4 py-3"
+                className="nb-input w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-3 text-sm sm:text-base"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
               {categories.map(category => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`nb-button px-4 py-2 ${selectedCategory === category ? 'bg-[var(--accent-pink)]' : ''}`}
+                  className={`nb-button px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${selectedCategory === category ? 'bg-[var(--accent-pink)]' : ''}`}
                 >
                   {category}
                 </button>
@@ -728,30 +733,30 @@ function AppContent() {
             <div className="flex gap-2">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`nb-button-secondary p-3 ${viewMode === 'grid' ? 'bg-[var(--accent-blue)]' : ''}`}
+                className={`nb-button-secondary p-2 sm:p-3 ${viewMode === 'grid' ? 'bg-[var(--accent-blue)]' : ''}`}
               >
-                <Grid className="w-5 h-5" strokeWidth={3} />
+                <Grid className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`nb-button-secondary p-3 ${viewMode === 'list' ? 'bg-[var(--accent-blue)]' : ''}`}
+                className={`nb-button-secondary p-2 sm:p-3 ${viewMode === 'list' ? 'bg-[var(--accent-blue)]' : ''}`}
               >
-                <List className="w-5 h-5" strokeWidth={3} />
+                <List className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
               </button>
             </div>
           </div>
         </div>
 
-        <p className="text-sm mb-4 font-bold">
+        <p className="text-xs sm:text-sm mb-3 sm:mb-4 font-bold px-1">
           Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
-          {searchQuery && ` for "${searchQuery}"`}
+          {searchQuery && <span className="break-all"> for "{searchQuery}"</span>}
         </p>
       </section>
 
       {/* Products Grid/List */}
-      <section className="m-4">
+      <section className="m-2 sm:m-4">
         {viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {filteredProducts.map(product => (
               <ProductCard
                 key={product.id}
@@ -762,34 +767,39 @@ function AppContent() {
             ))}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredProducts.map(product => (
-              <div key={product.id} className="nb-card p-4 flex gap-4">
+              <div key={product.id} className="nb-card p-3 sm:p-4 flex gap-3 sm:gap-4">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-32 h-32 object-cover border-2 border-[var(--border-color)] cursor-pointer"
+                  className="w-24 h-24 sm:w-32 sm:h-32 object-cover border-2 border-[var(--border-color)] cursor-pointer flex-shrink-0"
                   onClick={() => setSelectedProduct(product)}
                 />
-                <div className="flex-1">
-                  <span className="nb-badge inline-block mb-2">{product.category}</span>
-                  <h3 className="nb-heading text-xl mb-2 cursor-pointer" onClick={() => setSelectedProduct(product)}>
+                <div className="flex-1 min-w-0">
+                  <span className="nb-badge inline-block mb-2 text-xs">{product.category}</span>
+                  <h3 
+                    className="nb-heading text-base sm:text-xl mb-1 sm:mb-2 cursor-pointer line-clamp-2" 
+                    onClick={() => setSelectedProduct(product)}
+                    title={product.name}
+                  >
                     {product.name}
                   </h3>
-                  <p className="text-sm mb-2 text-[var(--text-secondary)]">{product.description}</p>
+                  <p className="text-xs sm:text-sm mb-2 text-[var(--text-secondary)] line-clamp-2">{product.description}</p>
                   <div className="flex items-center gap-2 mb-2">
-                    <Star className="w-4 h-4 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
-                    <span className="text-sm font-bold">{product.rating}</span>
+                    <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
+                    <span className="text-xs sm:text-sm font-bold">{product.rating}</span>
                     <span className="text-xs text-[var(--text-muted)]">({product.reviews})</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-black">${product.price.toFixed(2)}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-lg sm:text-2xl font-black">${product.price.toFixed(2)}</span>
                     <button
                       onClick={() => addToCart(product)}
-                      className="nb-button px-4 py-2 flex items-center gap-2"
+                      className="nb-button px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0"
                     >
-                      <Plus className="w-4 h-4" strokeWidth={3} />
-                      ADD
+                      <Plus className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={3} />
+                      <span className="hidden sm:inline">ADD</span>
+                      <span className="sm:hidden">+</span>
                     </button>
                   </div>
                 </div>
@@ -800,25 +810,34 @@ function AppContent() {
       </section>
 
       {/* Footer */}
-      <footer className="nb-card m-4 mt-12 p-8">
-        <div className="grid md:grid-cols-3 gap-8">
+      <footer className="nb-card m-4 mt-12 p-4 sm:p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
           <div>
-            <h3 className="nb-heading text-xl mb-4">WARM MUG</h3>
-            <p className="text-sm">Exceptional specialty coffee, roasted to order and delivered fresh to your door.</p>
+            <h3 className="nb-heading text-lg sm:text-xl mb-3 sm:mb-4">WARM MUG</h3>
+            <p className="text-xs sm:text-sm break-words">Exceptional specialty coffee, roasted to order and delivered fresh to your door.</p>
           </div>
           <div>
-            <h3 className="nb-heading text-xl mb-4">CONTACT</h3>
-            <p className="text-sm">hello@warmmug.com</p>
-            <p className="text-sm">+1 (503) 555-BREW</p>
+            <h3 className="nb-heading text-lg sm:text-xl mb-3 sm:mb-4">CONTACT</h3>
+            <p className="text-xs sm:text-sm break-all">hello@warmmug.com</p>
+            <p className="text-xs sm:text-sm break-all">+1 (503) 555-BREW</p>
           </div>
-          <div>
-            <h3 className="nb-heading text-xl mb-4">HOURS</h3>
-            <p className="text-sm">Mon-Fri: 7am - 7pm</p>
-            <p className="text-sm">Sat-Sun: 8am - 5pm</p>
+          <div className="sm:col-span-2 md:col-span-1">
+            <h3 className="nb-heading text-lg sm:text-xl mb-3 sm:mb-4">HOURS</h3>
+            <p className="text-xs sm:text-sm">Mon-Fri: 7am - 7pm</p>
+            <p className="text-xs sm:text-sm">Sat-Sun: 8am - 5pm</p>
           </div>
         </div>
-        <div className="border-t-2 border-[var(--border-color)] mt-8 pt-4 text-center text-sm font-bold">
-          © 2026 WARM MUG COFFEE CO. ALL RIGHTS RESERVED.
+        <div className="border-t-2 border-[var(--border-color)] mt-6 sm:mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs sm:text-sm font-bold text-center sm:text-left">
+            © 2026 WARM MUG COFFEE CO. ALL RIGHTS RESERVED.
+          </p>
+          <button
+            onClick={() => setCurrentPage('auth')}
+            className="nb-button-secondary px-4 py-2 text-xs sm:text-sm flex items-center gap-2"
+          >
+            <Shield className="w-4 h-4" strokeWidth={3} />
+            STAFF LOGIN
+          </button>
         </div>
       </footer>
 
