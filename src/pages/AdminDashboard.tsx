@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase, Order, Product } from '../lib/supabase';
-import { ArrowLeft, Package, TrendingUp, Users, RefreshCw, ChevronDown, ShoppingBag, Tag, Settings, Megaphone, Plus, Edit2, Trash2 } from 'lucide-react';
+import { ArrowLeft, Package, TrendingUp, Users, RefreshCw, ChevronDown, ShoppingBag, Tag, Settings, Megaphone, Plus, Edit2, Trash2, Save, X } from 'lucide-react';
 
 interface AdminDashboardProps {
   onBack: () => void;
@@ -8,12 +8,488 @@ interface AdminDashboardProps {
 
 type Tab = 'overview' | 'orders' | 'products' | 'categories' | 'campaigns' | 'settings';
 
+// Categories Tab Component
+function CategoriesTab({ categories, onAdd, onEdit, onDelete, showForm, editingCategory, onSave, onCancel }: any) {
+  const [formData, setFormData] = useState({ name: '', slug: '', description: '' });
+
+  useEffect(() => {
+    if (editingCategory) {
+      setFormData({
+        name: editingCategory.name || '',
+        slug: editingCategory.slug || '',
+        description: editingCategory.description || ''
+      });
+    } else {
+      setFormData({ name: '', slug: '', description: '' });
+    }
+  }, [editingCategory, showForm]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="m-4">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="nb-heading text-xl">CATEGORY MANAGEMENT</h2>
+        <button onClick={onAdd} className="nb-button px-4 py-2 flex items-center gap-2">
+          <Plus className="w-4 h-4" strokeWidth={3} />
+          ADD CATEGORY
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="nb-card p-6 mb-4">
+          <h3 className="nb-heading text-lg mb-4">{editingCategory ? 'EDIT' : 'ADD'} CATEGORY</h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold mb-2">NAME</label>
+              <input
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="nb-input w-full px-4 py-3"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-2">SLUG</label>
+              <input
+                type="text"
+                required
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
+                className="nb-input w-full px-4 py-3"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-2">DESCRIPTION</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="nb-input w-full px-4 py-3"
+                rows={3}
+              />
+            </div>
+            <div className="flex gap-2">
+              <button type="submit" className="nb-button px-6 py-2 flex items-center gap-2">
+                <Save className="w-4 h-4" strokeWidth={3} />
+                SAVE
+              </button>
+              <button type="button" onClick={onCancel} className="nb-button-secondary px-6 py-2 flex items-center gap-2">
+                <X className="w-4 h-4" strokeWidth={3} />
+                CANCEL
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {categories.length === 0 ? (
+        <div className="nb-card p-12 text-center">
+          <Tag className="w-16 h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
+          <p className="text-lg font-bold">No categories yet</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {categories.map((cat: any) => (
+            <div key={cat.id} className="nb-card p-4">
+              <h3 className="font-bold text-lg mb-1">{cat.name}</h3>
+              <p className="text-xs text-[var(--text-muted)] mb-2">/{cat.slug}</p>
+              <p className="text-sm text-[var(--text-secondary)] mb-3 line-clamp-2">{cat.description}</p>
+              <div className="flex gap-2">
+                <button onClick={() => onEdit(cat)} className="nb-button-secondary px-3 py-1.5 text-xs flex items-center gap-1">
+                  <Edit2 className="w-3 h-3" strokeWidth={3} />
+                  EDIT
+                </button>
+                <button onClick={() => onDelete(cat.id)} className="nb-button-secondary px-3 py-1.5 text-xs flex items-center gap-1">
+                  <Trash2 className="w-3 h-3" strokeWidth={3} />
+                  DELETE
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Campaigns Tab Component
+function CampaignsTab({ campaigns, onAdd, onEdit, onDelete, onToggleActive, showForm, editingCampaign, onSave, onCancel }: any) {
+  const [formData, setFormData] = useState({
+    title: '',
+    subtitle: '',
+    description: '',
+    image_url: '',
+    button_text: 'Shop Now',
+    button_link: '/shop',
+    bg_color: '#fbbf24',
+    text_color: '#1a1a1a',
+    is_active: true,
+    display_order: 0
+  });
+
+  useEffect(() => {
+    if (editingCampaign) {
+      setFormData({
+        title: editingCampaign.title || '',
+        subtitle: editingCampaign.subtitle || '',
+        description: editingCampaign.description || '',
+        image_url: editingCampaign.image_url || '',
+        button_text: editingCampaign.button_text || 'Shop Now',
+        button_link: editingCampaign.button_link || '/shop',
+        bg_color: editingCampaign.bg_color || '#fbbf24',
+        text_color: editingCampaign.text_color || '#1a1a1a',
+        is_active: editingCampaign.is_active !== false,
+        display_order: editingCampaign.display_order || 0
+      });
+    } else {
+      setFormData({
+        title: '',
+        subtitle: '',
+        description: '',
+        image_url: '',
+        button_text: 'Shop Now',
+        button_link: '/shop',
+        bg_color: '#fbbf24',
+        text_color: '#1a1a1a',
+        is_active: true,
+        display_order: 0
+      });
+    }
+  }, [editingCampaign, showForm]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="m-4">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="nb-heading text-xl">CAMPAIGN MANAGEMENT</h2>
+        <button onClick={onAdd} className="nb-button px-4 py-2 flex items-center gap-2">
+          <Plus className="w-4 h-4" strokeWidth={3} />
+          ADD CAMPAIGN
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="nb-card p-6 mb-4">
+          <h3 className="nb-heading text-lg mb-4">{editingCampaign ? 'EDIT' : 'ADD'} CAMPAIGN</h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">TITLE</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">SUBTITLE</label>
+                <input
+                  type="text"
+                  value={formData.subtitle}
+                  onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-2">DESCRIPTION</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                className="nb-input w-full px-4 py-3"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-2">IMAGE URL</label>
+              <input
+                type="url"
+                value={formData.image_url}
+                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                className="nb-input w-full px-4 py-3"
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">BUTTON TEXT</label>
+                <input
+                  type="text"
+                  value={formData.button_text}
+                  onChange={(e) => setFormData({ ...formData, button_text: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">BUTTON LINK</label>
+                <input
+                  type="text"
+                  value={formData.button_link}
+                  onChange={(e) => setFormData({ ...formData, button_link: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">BG COLOR</label>
+                <input
+                  type="color"
+                  value={formData.bg_color}
+                  onChange={(e) => setFormData({ ...formData, bg_color: e.target.value })}
+                  className="nb-input w-full h-12"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">TEXT COLOR</label>
+                <input
+                  type="color"
+                  value={formData.text_color}
+                  onChange={(e) => setFormData({ ...formData, text_color: e.target.value })}
+                  className="nb-input w-full h-12"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">DISPLAY ORDER</label>
+                <input
+                  type="number"
+                  value={formData.display_order}
+                  onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={formData.is_active}
+                onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                className="w-5 h-5"
+              />
+              <label className="text-sm font-bold">ACTIVE</label>
+            </div>
+            <div className="flex gap-2">
+              <button type="submit" className="nb-button px-6 py-2 flex items-center gap-2">
+                <Save className="w-4 h-4" strokeWidth={3} />
+                SAVE
+              </button>
+              <button type="button" onClick={onCancel} className="nb-button-secondary px-6 py-2 flex items-center gap-2">
+                <X className="w-4 h-4" strokeWidth={3} />
+                CANCEL
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {campaigns.length === 0 ? (
+        <div className="nb-card p-12 text-center">
+          <Megaphone className="w-16 h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
+          <p className="text-lg font-bold">No campaigns yet</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {campaigns.map((camp: any) => (
+            <div key={camp.id} className="nb-card overflow-hidden">
+              <div className="flex flex-col sm:flex-row">
+                {camp.image_url && (
+                  <img src={camp.image_url} alt={camp.title} className="w-full sm:w-48 h-32 object-cover" />
+                )}
+                <div className="flex-1 p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h3 className="font-bold text-lg">{camp.title}</h3>
+                      {camp.subtitle && <p className="text-sm text-[var(--text-secondary)]">{camp.subtitle}</p>}
+                    </div>
+                    <span className={`nb-badge text-xs ${camp.is_active ? 'nb-badge-green' : 'nb-badge-red'}`}>
+                      {camp.is_active ? 'ACTIVE' : 'INACTIVE'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-[var(--text-secondary)] mb-3 line-clamp-2">{camp.description}</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => onEdit(camp)} className="nb-button-secondary px-3 py-1.5 text-xs flex items-center gap-1">
+                      <Edit2 className="w-3 h-3" strokeWidth={3} />
+                      EDIT
+                    </button>
+                    <button onClick={() => onToggleActive(camp.id, camp.is_active)} className="nb-button-secondary px-3 py-1.5 text-xs">
+                      {camp.is_active ? 'DEACTIVATE' : 'ACTIVATE'}
+                    </button>
+                    <button onClick={() => onDelete(camp.id)} className="nb-button-secondary px-3 py-1.5 text-xs flex items-center gap-1">
+                      <Trash2 className="w-3 h-3" strokeWidth={3} />
+                      DELETE
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Settings Tab Component
+function SettingsTab({ settings, onSave }: any) {
+  const [formData, setFormData] = useState({
+    store_name: '',
+    store_email: '',
+    store_phone: '',
+    store_address: '',
+    store_hours: '',
+    free_shipping_threshold: '',
+    shipping_flat_rate: '',
+    tax_rate: ''
+  });
+
+  useEffect(() => {
+    setFormData({
+      store_name: settings.store_name || '',
+      store_email: settings.store_email || '',
+      store_phone: settings.store_phone || '',
+      store_address: settings.store_address || '',
+      store_hours: settings.store_hours || '',
+      free_shipping_threshold: settings.free_shipping_threshold || '',
+      shipping_flat_rate: settings.shipping_flat_rate || '',
+      tax_rate: settings.tax_rate || ''
+    });
+  }, [settings]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="m-4">
+      <h2 className="nb-heading text-xl mb-4">STORE SETTINGS</h2>
+      <div className="nb-card p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <h3 className="font-bold text-lg mb-4">GENERAL</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">STORE NAME</label>
+                <input
+                  type="text"
+                  value={formData.store_name}
+                  onChange={(e) => setFormData({ ...formData, store_name: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">STORE HOURS</label>
+                <input
+                  type="text"
+                  value={formData.store_hours}
+                  onChange={(e) => setFormData({ ...formData, store_hours: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                  placeholder="Mon-Fri: 7am-7pm"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-bold text-lg mb-4">CONTACT</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">EMAIL</label>
+                <input
+                  type="email"
+                  value={formData.store_email}
+                  onChange={(e) => setFormData({ ...formData, store_email: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">PHONE</label>
+                <input
+                  type="tel"
+                  value={formData.store_phone}
+                  onChange={(e) => setFormData({ ...formData, store_phone: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <label className="block text-sm font-bold mb-2">ADDRESS</label>
+              <textarea
+                value={formData.store_address}
+                onChange={(e) => setFormData({ ...formData, store_address: e.target.value })}
+                className="nb-input w-full px-4 py-3"
+                rows={2}
+              />
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-bold text-lg mb-4">SHIPPING & PRICING</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">FREE SHIPPING THRESHOLD ($)</label>
+                <input
+                  type="number"
+                  value={formData.free_shipping_threshold}
+                  onChange={(e) => setFormData({ ...formData, free_shipping_threshold: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">FLAT SHIPPING RATE ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.shipping_flat_rate}
+                  onChange={(e) => setFormData({ ...formData, shipping_flat_rate: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">TAX RATE (%)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.tax_rate}
+                  onChange={(e) => setFormData({ ...formData, tax_rate: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" className="nb-button px-6 py-3 flex items-center gap-2">
+            <Save className="w-5 h-5" strokeWidth={3} />
+            SAVE ALL SETTINGS
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard({ onBack }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [orders, setOrders] = useState<Order[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [showCampaignForm, setShowCampaignForm] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [editingCampaign, setEditingCampaign] = useState<any>(null);
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalRevenue: 0,
@@ -28,14 +504,28 @@ export default function AdminDashboard({ onBack }: AdminDashboardProps) {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      // Fetch orders
+      // Fetch orders first
       const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
-        .select('*, order_items(*)')
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (ordersError) throw ordersError;
-      setOrders(ordersData || []);
+
+      // Fetch order items separately
+      const { data: orderItemsData, error: orderItemsError } = await supabase
+        .from('order_items')
+        .select('*');
+
+      if (orderItemsError) throw orderItemsError;
+
+      // Merge order items with orders
+      const ordersWithItems = (ordersData || []).map((order: any) => ({
+        ...order,
+        items: (orderItemsData || []).filter((item: any) => item.order_id === order.id)
+      }));
+
+      setOrders(ordersWithItems);
 
       // Fetch products
       const { data: productsData, error: productsError } = await supabase
@@ -46,9 +536,36 @@ export default function AdminDashboard({ onBack }: AdminDashboardProps) {
       if (productsError) throw productsError;
       setProducts(productsData || []);
 
+      // Fetch categories
+      const { data: categoriesData } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name');
+
+      setCategories(categoriesData || []);
+
+      // Fetch campaigns
+      const { data: campaignsData } = await supabase
+        .from('campaigns')
+        .select('*')
+        .order('display_order');
+
+      setCampaigns(campaignsData || []);
+
+      // Fetch settings
+      const { data: settingsData } = await supabase
+        .from('store_settings')
+        .select('*');
+
+      const settingsObj: any = {};
+      (settingsData || []).forEach((s: any) => {
+        settingsObj[s.setting_key] = s.setting_value;
+      });
+      setSettings(settingsObj);
+
       // Calculate stats
-      const totalRevenue = ordersData?.reduce((sum, order) => sum + order.total, 0) || 0;
-      const pendingOrders = ordersData?.filter(o => o.status === 'pending').length || 0;
+      const totalRevenue = ordersData?.reduce((sum: number, order: any) => sum + order.total, 0) || 0;
+      const pendingOrders = ordersData?.filter((o: any) => o.status === 'pending').length || 0;
 
       setStats({
         totalOrders: ordersData?.length || 0,
@@ -116,6 +633,114 @@ export default function AdminDashboard({ onBack }: AdminDashboardProps) {
     } catch (err) {
       console.error('Error updating product:', err);
       alert('Error updating product.');
+    }
+  };
+
+  // Category CRUD
+  const saveCategory = async (categoryData: any) => {
+    try {
+      if (editingCategory) {
+        const { error } = await supabase
+          .from('categories')
+          .update(categoryData)
+          .eq('id', editingCategory.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('categories')
+          .insert([categoryData]);
+        if (error) throw error;
+      }
+      setShowCategoryForm(false);
+      setEditingCategory(null);
+      fetchAllData();
+    } catch (err) {
+      console.error('Error saving category:', err);
+      alert('Error saving category.');
+    }
+  };
+
+  const deleteCategory = async (categoryId: number) => {
+    if (!confirm('Are you sure you want to delete this category?')) return;
+    try {
+      const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', categoryId);
+      if (error) throw error;
+      fetchAllData();
+    } catch (err) {
+      console.error('Error deleting category:', err);
+      alert('Error deleting category.');
+    }
+  };
+
+  // Campaign CRUD
+  const saveCampaign = async (campaignData: any) => {
+    try {
+      if (editingCampaign) {
+        const { error } = await supabase
+          .from('campaigns')
+          .update(campaignData)
+          .eq('id', editingCampaign.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('campaigns')
+          .insert([campaignData]);
+        if (error) throw error;
+      }
+      setShowCampaignForm(false);
+      setEditingCampaign(null);
+      fetchAllData();
+    } catch (err) {
+      console.error('Error saving campaign:', err);
+      alert('Error saving campaign.');
+    }
+  };
+
+  const deleteCampaign = async (campaignId: number) => {
+    if (!confirm('Are you sure you want to delete this campaign?')) return;
+    try {
+      const { error } = await supabase
+        .from('campaigns')
+        .delete()
+        .eq('id', campaignId);
+      if (error) throw error;
+      fetchAllData();
+    } catch (err) {
+      console.error('Error deleting campaign:', err);
+      alert('Error deleting campaign.');
+    }
+  };
+
+  const toggleCampaignActive = async (campaignId: number, isActive: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('campaigns')
+        .update({ is_active: !isActive })
+        .eq('id', campaignId);
+      if (error) throw error;
+      fetchAllData();
+    } catch (err) {
+      console.error('Error updating campaign:', err);
+      alert('Error updating campaign.');
+    }
+  };
+
+  // Settings
+  const saveSettings = async (newSettings: any) => {
+    try {
+      for (const [key, value] of Object.entries(newSettings)) {
+        await supabase
+          .from('store_settings')
+          .upsert({ setting_key: key, setting_value: value as string }, { onConflict: 'setting_key' });
+      }
+      alert('Settings saved successfully!');
+      fetchAllData();
+    } catch (err) {
+      console.error('Error saving settings:', err);
+      alert('Error saving settings.');
     }
   };
 
@@ -414,38 +1039,39 @@ export default function AdminDashboard({ onBack }: AdminDashboardProps) {
 
       {/* Categories Tab */}
       {activeTab === 'categories' && (
-        <div className="m-4">
-          <h2 className="nb-heading text-xl mb-4">CATEGORY MANAGEMENT</h2>
-          <div className="nb-card p-12 text-center">
-            <Tag className="w-16 h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
-            <p className="text-lg font-bold mb-2">Category Management</p>
-            <p className="text-sm text-[var(--text-muted)]">Coming soon - Manage product categories</p>
-          </div>
-        </div>
+        <CategoriesTab 
+          categories={categories}
+          onAdd={() => { setEditingCategory(null); setShowCategoryForm(true); }}
+          onEdit={(cat: any) => { setEditingCategory(cat); setShowCategoryForm(true); }}
+          onDelete={deleteCategory}
+          showForm={showCategoryForm}
+          editingCategory={editingCategory}
+          onSave={saveCategory}
+          onCancel={() => { setShowCategoryForm(false); setEditingCategory(null); }}
+        />
       )}
 
       {/* Campaigns Tab */}
       {activeTab === 'campaigns' && (
-        <div className="m-4">
-          <h2 className="nb-heading text-xl mb-4">CAMPAIGN MANAGEMENT</h2>
-          <div className="nb-card p-12 text-center">
-            <Megaphone className="w-16 h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
-            <p className="text-lg font-bold mb-2">Campaign Management</p>
-            <p className="text-sm text-[var(--text-muted)]">Coming soon - Manage marketing campaigns</p>
-          </div>
-        </div>
+        <CampaignsTab 
+          campaigns={campaigns}
+          onAdd={() => { setEditingCampaign(null); setShowCampaignForm(true); }}
+          onEdit={(camp: any) => { setEditingCampaign(camp); setShowCampaignForm(true); }}
+          onDelete={deleteCampaign}
+          onToggleActive={toggleCampaignActive}
+          showForm={showCampaignForm}
+          editingCampaign={editingCampaign}
+          onSave={saveCampaign}
+          onCancel={() => { setShowCampaignForm(false); setEditingCampaign(null); }}
+        />
       )}
 
       {/* Settings Tab */}
       {activeTab === 'settings' && (
-        <div className="m-4">
-          <h2 className="nb-heading text-xl mb-4">STORE SETTINGS</h2>
-          <div className="nb-card p-12 text-center">
-            <Settings className="w-16 h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
-            <p className="text-lg font-bold mb-2">Store Settings</p>
-            <p className="text-sm text-[var(--text-muted)]">Coming soon - Configure store settings</p>
-          </div>
-        </div>
+        <SettingsTab 
+          settings={settings}
+          onSave={saveSettings}
+        />
       )}
     </div>
   );

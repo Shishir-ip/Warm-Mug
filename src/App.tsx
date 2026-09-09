@@ -6,6 +6,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import AuthPage from './pages/AuthPage';
 import UserAccountPage from './pages/UserAccountPage';
+import Carousel from './components/Carousel';
 import { supabase } from './lib/supabase';
 
 // Types
@@ -133,13 +134,14 @@ const PRODUCTS: Product[] = [
 ];
 
 // Header Component
-function Header({ cartCount, onCartClick, onAdminClick, onAccountClick, theme, onThemeToggle }: {
+function Header({ cartCount, onCartClick, onAdminClick, onAccountClick, theme, onThemeToggle, isAdmin }: {
   cartCount: number;
   onCartClick: () => void;
   onAdminClick: () => void;
   onAccountClick: () => void;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
+  isAdmin?: boolean;
 }) {
   return (
     <header className="nb-card sticky top-0 z-40 m-2 sm:m-4">
@@ -163,13 +165,15 @@ function Header({ cartCount, onCartClick, onAdminClick, onAccountClick, theme, o
             {theme === 'light' ? <Moon className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} /> : <Sun className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />}
           </button>
 
-          <button
-            onClick={onAdminClick}
-            className="nb-button-secondary p-2 sm:p-3 hidden sm:block"
-            title="Admin Dashboard"
-          >
-            <Shield className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
-          </button>
+          {isAdmin && (
+            <button
+              onClick={onAdminClick}
+              className="nb-button-secondary p-2 sm:p-3 hidden sm:block"
+              title="Admin Dashboard"
+            >
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
+            </button>
+          )}
 
           <button onClick={onAccountClick} className="nb-button-secondary p-2 sm:p-3">
             <User className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
@@ -494,6 +498,7 @@ function AppContent() {
   const { theme, toggleTheme } = useTheme();
   const [currentPage, setCurrentPage] = useState<'home' | 'checkout' | 'admin' | 'auth' | 'account'>('home');
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -503,14 +508,36 @@ function AppContent() {
 
   // Check auth state on mount
   useEffect(() => {
+    const checkAdminStatus = async (user: any) => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+      
+      try {
+        const { data: adminProfile } = await supabase
+          .from('admin_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        setIsAdmin(!!adminProfile);
+      } catch (err) {
+        setIsAdmin(false);
+      }
+    };
+
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user) {
         setCurrentUser(data.user);
+        checkAdminStatus(data.user);
       }
     });
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setCurrentUser(session?.user || null);
+      const user = session?.user || null;
+      setCurrentUser(user);
+      checkAdminStatus(user);
     });
 
     return () => {
@@ -627,6 +654,7 @@ function AppContent() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setCurrentUser(null);
+    setIsAdmin(false);
     setCurrentPage('home');
   };
 
@@ -719,7 +747,13 @@ function AppContent() {
         onAccountClick={() => setCurrentPage('account')}
         theme={theme}
         onThemeToggle={toggleTheme}
+        isAdmin={isAdmin}
       />
+
+      {/* Campaign Carousel */}
+      <section className="m-2 sm:m-4">
+        <Carousel />
+      </section>
 
       {/* Hero Section */}
       <section className="m-2 sm:m-4">

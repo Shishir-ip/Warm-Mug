@@ -47,11 +47,24 @@ export default function UserAccountPage({ onBack, onLogout }: UserAccountPagePro
       // Fetch orders
       const { data: ordersData } = await supabase
         .from('orders')
-        .select('*, order_items(*)')
+        .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      setOrders(ordersData || []);
+      // Fetch order items for user's orders
+      const orderIds = ordersData?.map(o => o.id) || [];
+      const { data: orderItemsData } = await supabase
+        .from('order_items')
+        .select('*')
+        .in('order_id', orderIds);
+
+      // Merge order items with orders
+      const ordersWithItems = (ordersData || []).map((order: any) => ({
+        ...order,
+        items: (orderItemsData || []).filter((item: any) => item.order_id === order.id)
+      }));
+
+      setOrders(ordersWithItems);
 
       // Fetch addresses
       const { data: addressesData } = await supabase
