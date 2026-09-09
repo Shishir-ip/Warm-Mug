@@ -67,9 +67,30 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Explicit color rules for all text elements */
+h1, h2, h3, h4, h5, h6, p, span, label, a, button, input, textarea, select, li, div {
+  color: var(--text-primary) !important;
+}
+
+/* Override for specific components that need different colors */
+.nb-button {
+  color: #000000 !important;
+}
+
+.nb-badge {
+  color: #000000 !important;
+}
+
+.nb-badge-pink,
+.nb-badge-blue,
+.nb-badge-green,
+.nb-badge-red {
+  color: #ffffff !important;
+}
+
 /* Ensure all text elements respect the theme */
 h1, h2, h3, h4, h5, h6, p, span, label, input, button, a, li, ul, ol, div {
-  color: inherit;
+  color: var(--text-primary);
 }
 
 /* Fix for any remaining hardcoded colors */
@@ -109,6 +130,7 @@ h1, h2, h3, h4, h5, h6, p, span, label, input, button, a, li, ul, ol, div {
   border: var(--border-width) solid var(--border-color);
   box-shadow: var(--shadow-hard);
   transition: all 0.2s ease;
+  color: var(--text-primary);
 }
 
 .nb-card:hover {
@@ -198,6 +220,7 @@ h1, h2, h3, h4, h5, h6, p, span, label, input, button, a, li, ul, ol, div {
   text-transform: uppercase;
   letter-spacing: -0.02em;
   line-height: 1.1;
+  color: var(--text-primary);
 }
 
 /* Animations */
