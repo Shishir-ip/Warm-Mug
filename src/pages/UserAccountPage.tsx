@@ -147,118 +147,119 @@ export default function UserAccountPage({ onBack, onLogout }: UserAccountPagePro
 
   return (
     <div className="min-h-screen">
-      <div className="nb-card m-4">
-        <div className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={onBack} className="nb-button-secondary p-2">
-              <ArrowLeft className="w-5 h-5" strokeWidth={3} />
+      {/* Header */}
+      <div className="nb-card m-2 sm:m-4">
+        <div className="p-3 sm:p-4 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <button onClick={onBack} className="nb-button-secondary p-2 flex-shrink-0">
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
             </button>
-            <h1 className="nb-heading text-2xl">MY ACCOUNT</h1>
+            <h1 className="nb-heading text-lg sm:text-2xl truncate">MY ACCOUNT</h1>
           </div>
-          <button onClick={onLogout} className="nb-button px-4 py-2 flex items-center gap-2">
-            <LogOut className="w-4 h-4" strokeWidth={3} />
-            LOGOUT
+          <button onClick={onLogout} className="nb-button px-3 py-2 sm:px-4 sm:py-2 flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+            <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={3} />
+            <span className="text-xs sm:text-sm">LOGOUT</span>
           </button>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="m-4 flex gap-2">
+      {/* Tabs - Scrollable on mobile */}
+      <div className="m-2 sm:m-4 flex gap-2 overflow-x-auto pb-2 sm:pb-0">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`nb-button px-6 py-3 flex items-center gap-2 ${activeTab === 'profile' ? 'bg-[var(--accent-yellow)]' : ''}`}
+          className={`nb-button px-3 py-2 sm:px-6 sm:py-3 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap flex-shrink-0 text-xs sm:text-sm ${activeTab === 'profile' ? 'bg-[var(--accent-yellow)]' : ''}`}
         >
-          <User className="w-5 h-5" strokeWidth={3} />
-          PROFILE
+          <User className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
+          <span>PROFILE</span>
         </button>
         <button
           onClick={() => setActiveTab('orders')}
-          className={`nb-button px-6 py-3 flex items-center gap-2 ${activeTab === 'orders' ? 'bg-[var(--accent-yellow)]' : ''}`}
+          className={`nb-button px-3 py-2 sm:px-6 sm:py-3 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap flex-shrink-0 text-xs sm:text-sm ${activeTab === 'orders' ? 'bg-[var(--accent-yellow)]' : ''}`}
         >
-          <Package className="w-5 h-5" strokeWidth={3} />
-          ORDERS ({orders.length})
+          <Package className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
+          <span>ORDERS ({orders.length})</span>
         </button>
         <button
           onClick={() => setActiveTab('addresses')}
-          className={`nb-button px-6 py-3 flex items-center gap-2 ${activeTab === 'addresses' ? 'bg-[var(--accent-yellow)]' : ''}`}
+          className={`nb-button px-3 py-2 sm:px-6 sm:py-3 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap flex-shrink-0 text-xs sm:text-sm ${activeTab === 'addresses' ? 'bg-[var(--accent-yellow)]' : ''}`}
         >
-          <MapPin className="w-5 h-5" strokeWidth={3} />
-          ADDRESSES ({addresses.length})
+          <MapPin className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
+          <span>ADDRESSES ({addresses.length})</span>
         </button>
       </div>
 
       {/* Profile Tab */}
       {activeTab === 'profile' && (
-        <div className="m-4">
-          <div className="nb-card p-6">
-            <h2 className="nb-heading text-xl mb-4">PROFILE INFORMATION</h2>
+        <div className="m-2 sm:m-4">
+          <div className="nb-card p-4 sm:p-6">
+            <h2 className="nb-heading text-lg sm:text-xl mb-4">PROFILE INFORMATION</h2>
             
             {loading ? (
               <div className="text-center py-8">
-                <p className="text-lg font-bold">Loading profile...</p>
+                <p className="text-base sm:text-lg font-bold">Loading profile...</p>
               </div>
             ) : !profile ? (
               <div className="text-center py-8">
-                <User className="w-16 h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
-                <p className="text-lg font-bold mb-2">No profile found</p>
-                <p className="text-sm text-[var(--text-muted)] mb-4">Please complete your profile information</p>
+                <User className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
+                <p className="text-base sm:text-lg font-bold mb-2">No profile found</p>
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] mb-4">Please complete your profile information</p>
                 <button 
                   onClick={() => setEditingProfile(true)} 
-                  className="nb-button px-6 py-2"
+                  className="nb-button px-4 py-2 sm:px-6 sm:py-2 text-sm sm:text-base"
                 >
                   CREATE PROFILE
                 </button>
               </div>
             ) : editingProfile ? (
-              <form onSubmit={handleUpdateProfile} className="space-y-4">
+              <form onSubmit={handleUpdateProfile} className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-sm font-bold mb-2">FULL NAME</label>
+                  <label className="block text-xs sm:text-sm font-bold mb-2">FULL NAME</label>
                   <input
                     type="text"
                     required
                     value={profileForm.full_name}
                     onChange={(e) => setProfileForm({ ...profileForm, full_name: e.target.value })}
-                    className="nb-input w-full px-4 py-3"
+                    className="nb-input w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-2">EMAIL</label>
+                  <label className="block text-xs sm:text-sm font-bold mb-2">EMAIL</label>
                   <input
                     type="email"
                     value={profile.email}
                     disabled
-                    className="nb-input w-full px-4 py-3 opacity-50"
+                    className="nb-input w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base opacity-50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold mb-2">PHONE</label>
+                  <label className="block text-xs sm:text-sm font-bold mb-2">PHONE</label>
                   <input
                     type="tel"
                     value={profileForm.phone}
                     onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                    className="nb-input w-full px-4 py-3"
+                    className="nb-input w-full px-3 py-2 sm:px-4 sm:py-3 text-sm sm:text-base"
                   />
                 </div>
                 <div className="flex gap-2">
-                  <button type="submit" className="nb-button px-6 py-2">SAVE</button>
-                  <button type="button" onClick={() => setEditingProfile(false)} className="nb-button-secondary px-6 py-2">CANCEL</button>
+                  <button type="submit" className="nb-button px-4 py-2 sm:px-6 sm:py-2 text-sm sm:text-base flex-1">SAVE</button>
+                  <button type="button" onClick={() => setEditingProfile(false)} className="nb-button-secondary px-4 py-2 sm:px-6 sm:py-2 text-sm sm:text-base flex-1">CANCEL</button>
                 </div>
               </form>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <p className="text-sm font-bold">FULL NAME</p>
-                  <p className="text-lg break-words">{profile.full_name}</p>
+                  <p className="text-xs sm:text-sm font-bold">FULL NAME</p>
+                  <p className="text-base sm:text-lg break-words">{profile.full_name}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-bold">EMAIL</p>
-                  <p className="text-lg break-all">{profile.email}</p>
+                  <p className="text-xs sm:text-sm font-bold">EMAIL</p>
+                  <p className="text-base sm:text-lg break-all">{profile.email}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-bold">PHONE</p>
-                  <p className="text-lg break-all">{profile.phone || 'Not set'}</p>
+                  <p className="text-xs sm:text-sm font-bold">PHONE</p>
+                  <p className="text-base sm:text-lg break-all">{profile.phone || 'Not set'}</p>
                 </div>
-                <button onClick={() => setEditingProfile(true)} className="nb-button px-6 py-2">EDIT PROFILE</button>
+                <button onClick={() => setEditingProfile(true)} className="nb-button px-4 py-2 sm:px-6 sm:py-2 text-sm sm:text-base w-full sm:w-auto">EDIT PROFILE</button>
               </div>
             )}
           </div>
@@ -267,24 +268,24 @@ export default function UserAccountPage({ onBack, onLogout }: UserAccountPagePro
 
       {/* Orders Tab */}
       {activeTab === 'orders' && (
-        <div className="m-4 space-y-4">
-          <h2 className="nb-heading text-xl">ORDER HISTORY</h2>
+        <div className="m-2 sm:m-4 space-y-3 sm:space-y-4">
+          <h2 className="nb-heading text-lg sm:text-xl">ORDER HISTORY</h2>
           
           {orders.length === 0 ? (
-            <div className="nb-card p-12 text-center">
-              <Package className="w-16 h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
-              <p className="text-lg font-bold">No orders yet</p>
+            <div className="nb-card p-8 sm:p-12 text-center">
+              <Package className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
+              <p className="text-base sm:text-lg font-bold">No orders yet</p>
             </div>
           ) : (
             orders.map(order => (
-              <div key={order.id} className="nb-card p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <p className="font-black text-lg">#{order.order_number}</p>
-                    <p className="text-sm">{new Date(order.created_at).toLocaleDateString()}</p>
+              <div key={order.id} className="nb-card p-3 sm:p-4">
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-black text-sm sm:text-lg truncate">#{order.order_number}</p>
+                    <p className="text-xs sm:text-sm">{new Date(order.created_at).toLocaleDateString()}</p>
                   </div>
-                  <div className="text-right">
-                    <span className={`nb-badge ${
+                  <div className="text-right flex-shrink-0">
+                    <span className={`nb-badge text-[10px] sm:text-xs ${
                       order.status === 'pending' ? 'nb-badge-red' :
                       order.status === 'processing' ? 'nb-badge-blue' :
                       order.status === 'shipped' ? 'nb-badge-pink' :
@@ -292,19 +293,19 @@ export default function UserAccountPage({ onBack, onLogout }: UserAccountPagePro
                     }`}>
                       {order.status.toUpperCase()}
                     </span>
-                    <p className="text-2xl font-black mt-2">${order.total.toFixed(2)}</p>
+                    <p className="text-xl sm:text-2xl font-black mt-2">${order.total.toFixed(2)}</p>
                   </div>
                 </div>
                 
-                <div className="border-t-2 border-[var(--border-color)] pt-3 space-y-2">
+                <div className="border-t-2 border-[var(--border-color)] pt-2 sm:pt-3 space-y-2">
                   {order.items?.map(item => (
-                    <div key={item.id} className="flex gap-3">
-                      <img src={item.product_image} alt={item.product_name} className="w-12 h-12 object-cover border-2 border-[var(--border-color)]" />
-                      <div className="flex-1">
-                        <p className="font-bold text-sm">{item.product_name}</p>
-                        <p className="text-xs">Qty: {item.quantity} × ${item.unit_price.toFixed(2)}</p>
+                    <div key={item.id} className="flex gap-2 sm:gap-3">
+                      <img src={item.product_image} alt={item.product_name} className="w-10 h-10 sm:w-12 sm:h-12 object-cover border-2 border-[var(--border-color)] flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-xs sm:text-sm truncate">{item.product_name}</p>
+                        <p className="text-[10px] sm:text-xs">Qty: {item.quantity} × ${item.unit_price.toFixed(2)}</p>
                       </div>
-                      <p className="font-bold">${item.total_price.toFixed(2)}</p>
+                      <p className="font-bold text-xs sm:text-sm flex-shrink-0">${item.total_price.toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
@@ -316,45 +317,46 @@ export default function UserAccountPage({ onBack, onLogout }: UserAccountPagePro
 
       {/* Addresses Tab */}
       {activeTab === 'addresses' && (
-        <div className="m-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="nb-heading text-xl">SAVED ADDRESSES</h2>
-            <button className="nb-button px-4 py-2 flex items-center gap-2">
-              <Plus className="w-4 h-4" strokeWidth={3} />
-              ADD ADDRESS
+        <div className="m-2 sm:m-4 space-y-3 sm:space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="nb-heading text-lg sm:text-xl">SAVED ADDRESSES</h2>
+            <button className="nb-button px-3 py-2 sm:px-4 sm:py-2 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm flex-shrink-0">
+              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={3} />
+              <span className="hidden sm:inline">ADD ADDRESS</span>
+              <span className="sm:hidden">ADD</span>
             </button>
           </div>
           
           {addresses.length === 0 ? (
-            <div className="nb-card p-12 text-center">
-              <MapPin className="w-16 h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
-              <p className="text-lg font-bold">No saved addresses</p>
+            <div className="nb-card p-8 sm:p-12 text-center">
+              <MapPin className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
+              <p className="text-base sm:text-lg font-bold">No saved addresses</p>
             </div>
           ) : (
             addresses.map(address => (
-              <div key={address.id} className="nb-card p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-black text-lg">{address.label}</p>
+              <div key={address.id} className="nb-card p-3 sm:p-4">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <p className="font-black text-base sm:text-lg truncate">{address.label}</p>
                       {address.is_default && (
-                        <span className="nb-badge nb-badge-green text-xs">DEFAULT</span>
+                        <span className="nb-badge nb-badge-green text-[10px] sm:text-xs">DEFAULT</span>
                       )}
                     </div>
-                    <p className="font-bold">{address.full_name}</p>
-                    <p className="text-sm">{address.phone}</p>
+                    <p className="font-bold text-sm sm:text-base truncate">{address.full_name}</p>
+                    <p className="text-xs sm:text-sm break-all">{address.phone}</p>
                   </div>
                   <button
                     onClick={() => handleDeleteAddress(address.id)}
-                    className="nb-button-secondary p-2"
+                    className="nb-button-secondary px-3 py-1.5 sm:p-2 text-xs sm:text-sm flex-shrink-0"
                   >
                     DELETE
                   </button>
                 </div>
                 <div className="border-t-2 border-[var(--border-color)] pt-2">
-                  <p className="text-sm">{address.address_line}</p>
-                  <p className="text-sm">{address.city}</p>
-                  {address.landmark && <p className="text-sm">📍 {address.landmark}</p>}
+                  <p className="text-xs sm:text-sm break-words">{address.address_line}</p>
+                  <p className="text-xs sm:text-sm">{address.city}</p>
+                  {address.landmark && <p className="text-xs sm:text-sm break-words">📍 {address.landmark}</p>}
                 </div>
               </div>
             ))

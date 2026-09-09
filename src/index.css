@@ -61,6 +61,16 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Ensure all text elements respect the theme */
+h1, h2, h3, h4, h5, h6, p, span, label, input, button, a {
+  color: inherit;
+}
+
+/* Fix for any remaining hardcoded colors */
+[data-theme="dark"] * {
+  color-scheme: dark;
+}
+
 /* Neo-Brutalism Components */
 .nb-card {
   background-color: var(--card-bg);
@@ -146,10 +156,10 @@ body {
   letter-spacing: 0.05em;
 }
 
-.nb-badge-pink { background-color: var(--accent-pink); color: white; }
-.nb-badge-blue { background-color: var(--accent-blue); color: white; }
-.nb-badge-green { background-color: var(--accent-green); color: white; }
-.nb-badge-red { background-color: var(--accent-red); color: white; }
+.nb-badge-pink { background-color: var(--accent-pink); color: var(--text-primary); }
+.nb-badge-blue { background-color: var(--accent-blue); color: var(--text-primary); }
+.nb-badge-green { background-color: var(--accent-green); color: var(--text-primary); }
+.nb-badge-red { background-color: var(--accent-red); color: var(--text-primary); }
 
 .nb-heading {
   font-weight: 900;
