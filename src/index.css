@@ -122,8 +122,109 @@ h1, h2, h3, h4, h5, h6, p, span, label, input, button, a, li, ul, ol, div {
 [data-theme="dark"] aside,
 [data-theme="dark"] nav,
 [data-theme="dark"] header,
-[data-theme="dark"] footer {
+[data-theme="dark"] footer,
+[data-theme="dark"] div,
+[data-theme="dark"] form,
+[data-theme="dark"] fieldset,
+[data-theme="dark"] legend {
   background-color: var(--bg-primary);
+}
+
+/* Ensure all cards and containers are dark */
+[data-theme="dark"] .nb-card,
+[data-theme="dark"] [class*="card"],
+[data-theme="dark"] [class*="container"],
+[data-theme="dark"] [class*="panel"],
+[data-theme="dark"] [class*="modal"],
+[data-theme="dark"] [class*="dialog"] {
+  background-color: var(--card-bg) !important;
+}
+
+/* Ensure all inputs are dark */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+[data-theme="dark"] .nb-input {
+  background-color: var(--input-bg) !important;
+}
+
+/* Ensure all buttons except primary yellow buttons are dark */
+[data-theme="dark"] .nb-button-secondary {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Ensure borders are dark */
+[data-theme="dark"] * {
+  border-color: var(--border-color) !important;
+}
+
+/* Ensure shadows are dark */
+[data-theme="dark"] .nb-card {
+  box-shadow: var(--shadow-hard) !important;
+}
+
+[data-theme="dark"] .nb-card:hover {
+  box-shadow: var(--shadow-hard-lg) !important;
+}
+
+[data-theme="dark"] .nb-button,
+[data-theme="dark"] .nb-button-secondary,
+[data-theme="dark"] .nb-input {
+  box-shadow: var(--shadow-hard-sm) !important;
+}
+
+/* Override any remaining white/light backgrounds */
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background: #fff"],
+[data-theme="dark"] [style*="background: #ffffff"],
+[data-theme="dark"] [style*="background-color: white"],
+[data-theme="dark"] [style*="background-color: #fff"],
+[data-theme="dark"] [style*="background-color: #ffffff"] {
+  background-color: var(--card-bg) !important;
+}
+
+/* Override any remaining light borders */
+[data-theme="dark"] [style*="border: white"],
+[data-theme="dark"] [style*="border: #fff"],
+[data-theme="dark"] [style*="border: #ffffff"],
+[data-theme="dark"] [style*="border-color: white"],
+[data-theme="dark"] [style*="border-color: #fff"],
+[data-theme="dark"] [style*="border-color: #ffffff"] {
+  border-color: var(--border-color) !important;
+}
+
+/* Ensure scrollbars are dark */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--border-color) !important;
+}
+
+/* Ensure selection is dark */
+[data-theme="dark"] ::selection {
+  background-color: var(--accent-yellow) !important;
+  color: #000000 !important;
+}
+
+/* Ensure focus outlines are dark */
+[data-theme="dark"] *:focus {
+  outline-color: var(--border-color) !important;
+}
+
+/* Ensure hover states are dark */
+[data-theme="dark"] .nb-card:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .nb-button-secondary:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Ensure active states are dark */
+[data-theme="dark"] .nb-card:active {
+  background-color: var(--bg-tertiary) !important;
 }
 
 /* Neo-Brutalism Components */
