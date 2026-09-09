@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
-import { Sun, Moon, ShoppingBag, Coffee, User, Search, X, Plus, Minus, Trash2, Grid, List, Star, MapPin, Flame } from 'lucide-react';
+import { Sun, Moon, ShoppingBag, Coffee, User, Search, X, Plus, Minus, Trash2, Grid, List, Star, MapPin, Flame, Shield } from 'lucide-react';
+import CheckoutPage from './pages/CheckoutPage';
+import AdminDashboard from './pages/AdminDashboard';
+import { supabase } from './lib/supabase';
 
 // Types
 interface Product {
@@ -22,7 +25,7 @@ interface Product {
   reviews: number;
 }
 
-interface CartItem extends Product {
+export interface CartItem extends Product {
   quantity: number;
 }
 
@@ -127,9 +130,10 @@ const PRODUCTS: Product[] = [
 ];
 
 // Header Component
-function Header({ cartCount, onCartClick, theme, onThemeToggle }: {
+function Header({ cartCount, onCartClick, onAdminClick, theme, onThemeToggle }: {
   cartCount: number;
   onCartClick: () => void;
+  onAdminClick: () => void;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
 }) {
@@ -153,6 +157,14 @@ function Header({ cartCount, onCartClick, theme, onThemeToggle }: {
             title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
             {theme === 'light' ? <Moon className="w-5 h-5" strokeWidth={3} /> : <Sun className="w-5 h-5" strokeWidth={3} />}
+          </button>
+
+          <button
+            onClick={onAdminClick}
+            className="nb-button-secondary p-3"
+            title="Admin Dashboard"
+          >
+            <Shield className="w-5 h-5" strokeWidth={3} />
           </button>
 
           <button className="nb-button-secondary p-3">
@@ -370,12 +382,13 @@ function ProductDetailModal({ product, onClose, onAddToCart }: {
 }
 
 // Cart Sidebar
-function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove }: {
+function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove, onCheckout }: {
   isOpen: boolean;
   onClose: () => void;
   cart: CartItem[];
   onUpdateQuantity: (id: number, quantity: number) => void;
   onRemove: (id: number) => void;
+  onCheckout: () => void;
 }) {
   const total = cart.reduce((sum, item) => {
     const hasDiscount = item.originalPrice && item.discountType && item.discountValue;
@@ -457,7 +470,7 @@ function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove }: {
               <span className="font-bold text-lg">TOTAL:</span>
               <span className="font-black text-2xl">${total.toFixed(2)}</span>
             </div>
-            <button className="nb-button w-full py-3 text-lg">
+            <button onClick={onCheckout} className="nb-button w-full py-3 text-lg">
               CHECKOUT
             </button>
           </div>
@@ -470,6 +483,7 @@ function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove }: {
 // Main App Content
 function AppContent() {
   const { theme, toggleTheme } = useTheme();
+  const [currentPage, setCurrentPage] = useState<'home' | 'checkout' | 'admin'>('home');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -516,11 +530,95 @@ function AppContent() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    setCurrentPage('checkout');
+  };
+
+  const handleOrderComplete = async (orderData: any) => {
+    try {
+      // Create order in Supabase
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert([{
+          order_number: orderData.order_number,
+          status: orderData.status,
+          subtotal: orderData.subtotal,
+          shipping_cost: orderData.shipping_cost,
+          tax: orderData.tax,
+          total: orderData.total,
+          shipping_name: orderData.shipping_name,
+          shipping_phone: orderData.shipping_phone,
+          shipping_address: orderData.shipping_address,
+          shipping_city: orderData.shipping_city,
+          shipping_landmark: orderData.shipping_landmark,
+          shipping_country: orderData.shipping_country,
+          payment_method: orderData.payment_method,
+          payment_status: orderData.payment_status,
+          mobile_banking_provider: orderData.mobile_banking_provider,
+          mobile_banking_number: orderData.mobile_banking_number,
+          mobile_banking_transaction_id: orderData.mobile_banking_transaction_id,
+        }])
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order items
+      if (order) {
+        const orderItems = orderData.items.map((item: any) => ({
+          order_id: order.id,
+          product_id: item.product_id,
+          product_name: item.product_name,
+          product_image: item.product_image,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          total_price: item.total_price,
+        }));
+
+        const { error: itemsError } = await supabase
+          .from('order_items')
+          .insert(orderItems);
+
+        if (itemsError) throw itemsError;
+      }
+
+      // Clear cart and redirect to home
+      setCart([]);
+      setCurrentPage('home');
+      alert('Order placed successfully! Order number: ' + orderData.order_number);
+    } catch (err) {
+      console.error('Error creating order:', err);
+      alert('Error placing order. Please try again.');
+    }
+  };
+
+  // Render different pages
+  if (currentPage === 'checkout') {
+    return (
+      <CheckoutPage
+        cart={cart}
+        cartTotal={cart.reduce((sum, item) => sum + item.price * item.quantity, 0)}
+        onBack={() => setCurrentPage('home')}
+        onOrderComplete={handleOrderComplete}
+      />
+    );
+  }
+
+  if (currentPage === 'admin') {
+    return (
+      <AdminDashboard
+        onBack={() => setCurrentPage('home')}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <Header
         cartCount={cartCount}
         onCartClick={() => setIsCartOpen(true)}
+        onAdminClick={() => setCurrentPage('admin')}
         theme={theme}
         onThemeToggle={toggleTheme}
       />
@@ -682,6 +780,7 @@ function AppContent() {
         cart={cart}
         onUpdateQuantity={updateQuantity}
         onRemove={removeFromCart}
+        onCheckout={handleCheckout}
       />
     </div>
   );
