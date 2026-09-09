@@ -1,36 +1,135 @@
 import { useState, useEffect } from 'react';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
-import { Sun, Moon, ShoppingBag, Coffee, User, Search, X, Plus, Minus, Trash2, ArrowLeft, Sun as SunIcon, Moon as MoonIcon } from 'lucide-react';
+import { Sun, Moon, ShoppingBag, Coffee, User, Search, X, Plus, Minus, Trash2, Grid, List, Star, MapPin, Flame } from 'lucide-react';
 
 // Types
 interface Product {
   id: number;
   name: string;
   description: string;
+  longDescription: string;
   price: number;
+  originalPrice?: number;
+  discountType?: 'percentage' | 'fixed';
+  discountValue?: number;
   image: string;
   category: string;
+  origin: string;
+  roast: string;
+  notes: string[];
+  weight: string;
+  rating: number;
+  reviews: number;
 }
 
 interface CartItem extends Product {
   quantity: number;
 }
 
-// Sample products
+// Sample products data
 const PRODUCTS: Product[] = [
-  { id: 1, name: 'Ethiopian Yirgacheffe', description: 'Bright, fruity, floral notes', price: 18.99, image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop', category: 'Single Origin' },
-  { id: 2, name: 'Colombian Supremo', description: 'Rich, balanced, caramel sweetness', price: 16.99, image: 'https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=400&h=400&fit=crop', category: 'Single Origin' },
-  { id: 3, name: 'Espresso Blend', description: 'Bold, intense, chocolatey', price: 15.99, image: 'https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?w=400&h=400&fit=crop', category: 'Blend' },
-  { id: 4, name: 'Morning Ritual', description: 'Smooth, approachable, honey notes', price: 14.99, image: 'https://images.unsplash.com/photo-1610889556528-9a770e32642f?w=400&h=400&fit=crop', category: 'Blend' },
-  { id: 5, name: 'Kenyan AA', description: 'Vibrant, complex, blackcurrant', price: 19.99, image: 'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=400&h=400&fit=crop', category: 'Single Origin' },
-  { id: 6, name: 'Decaf Velvet', description: 'Smooth decaf, cocoa, vanilla', price: 17.99, image: 'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=400&h=400&fit=crop', category: 'Decaf' },
+  {
+    id: 1,
+    name: 'Ethiopian Yirgacheffe',
+    description: 'Bright, fruity, floral notes',
+    longDescription: 'A stunning single-origin from the birthplace of coffee. This natural-process Ethiopian showcases intense blueberry and jasmine notes with a silky body.',
+    price: 18.99,
+    originalPrice: 22.99,
+    discountType: 'percentage',
+    discountValue: 15,
+    image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop',
+    category: 'Single Origin',
+    origin: 'Ethiopia',
+    roast: 'Light',
+    notes: ['Blueberry', 'Jasmine', 'Dark Chocolate'],
+    weight: '250g',
+    rating: 4.9,
+    reviews: 127
+  },
+  {
+    id: 2,
+    name: 'Colombian Supremo',
+    description: 'Rich, balanced, caramel sweetness',
+    longDescription: 'Sourced from the highlands of Huila, Colombia, this Supremo grade bean delivers a perfectly balanced cup with rich caramel sweetness.',
+    price: 16.99,
+    image: 'https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=400&h=400&fit=crop',
+    category: 'Single Origin',
+    origin: 'Colombia',
+    roast: 'Medium',
+    notes: ['Caramel', 'Green Apple', 'Hazelnut'],
+    weight: '250g',
+    rating: 4.7,
+    reviews: 98
+  },
+  {
+    id: 3,
+    name: 'Espresso Blend',
+    description: 'Bold, intense, chocolatey',
+    longDescription: 'Our signature espresso blend combines Brazilian and Sumatran beans for a full-bodied, low-acid experience.',
+    price: 15.99,
+    image: 'https://images.unsplash.com/photo-1611854779393-1b2da9d400fe?w=400&h=400&fit=crop',
+    category: 'Blend',
+    origin: 'Brazil & Sumatra',
+    roast: 'Dark',
+    notes: ['Dark Chocolate', 'Toasted Walnut', 'Smoky'],
+    weight: '250g',
+    rating: 4.8,
+    reviews: 156
+  },
+  {
+    id: 4,
+    name: 'Morning Ritual',
+    description: 'Smooth, approachable, honey notes',
+    longDescription: 'A carefully crafted blend designed for your daily ritual. Combining washed Central American beans with a touch of natural-process Ethiopian.',
+    price: 14.99,
+    image: 'https://images.unsplash.com/photo-1610889556528-9a770e32642f?w=400&h=400&fit=crop',
+    category: 'Blend',
+    origin: 'Guatemala & Ethiopia',
+    roast: 'Medium',
+    notes: ['Honey', 'Milk Chocolate', 'Citrus'],
+    weight: '250g',
+    rating: 4.6,
+    reviews: 203
+  },
+  {
+    id: 5,
+    name: 'Kenyan AA',
+    description: 'Vibrant, complex, blackcurrant',
+    longDescription: 'A rare peaberry selection from Kenya\'s central highlands. These unique single-seed beans produce an exceptionally vibrant cup.',
+    price: 19.99,
+    originalPrice: 24.99,
+    discountType: 'fixed',
+    discountValue: 5,
+    image: 'https://images.unsplash.com/photo-1498804103079-a6351b050096?w=400&h=400&fit=crop',
+    category: 'Single Origin',
+    origin: 'Kenya',
+    roast: 'Light',
+    notes: ['Blackcurrant', 'Grapefruit', 'Brown Sugar'],
+    weight: '200g',
+    rating: 4.9,
+    reviews: 74
+  },
+  {
+    id: 6,
+    name: 'Decaf Velvet',
+    description: 'Smooth decaf, cocoa, vanilla',
+    longDescription: 'Swiss Water Process decaffeinated without compromising on flavor. Rich cocoa, subtle vanilla, and a gentle warmth of cinnamon.',
+    price: 17.99,
+    image: 'https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=400&h=400&fit=crop',
+    category: 'Decaf',
+    origin: 'Mexico',
+    roast: 'Medium-Dark',
+    notes: ['Cocoa', 'Vanilla', 'Cinnamon'],
+    weight: '250g',
+    rating: 4.5,
+    reviews: 89
+  }
 ];
 
 // Header Component
-function Header({ cartCount, onCartClick, onAccountClick, theme, onThemeToggle }: {
+function Header({ cartCount, onCartClick, theme, onThemeToggle }: {
   cartCount: number;
   onCartClick: () => void;
-  onAccountClick: () => void;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
 }) {
@@ -56,10 +155,7 @@ function Header({ cartCount, onCartClick, onAccountClick, theme, onThemeToggle }
             {theme === 'light' ? <Moon className="w-5 h-5" strokeWidth={3} /> : <Sun className="w-5 h-5" strokeWidth={3} />}
           </button>
 
-          <button
-            onClick={onAccountClick}
-            className="nb-button-secondary p-3"
-          >
+          <button className="nb-button-secondary p-3">
             <User className="w-5 h-5" strokeWidth={3} />
           </button>
 
@@ -69,7 +165,7 @@ function Header({ cartCount, onCartClick, onAccountClick, theme, onThemeToggle }
           >
             <ShoppingBag className="w-5 h-5" strokeWidth={3} />
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 w-6 h-6 bg-[var(--accent-red)] text-white border-2 border-[var(--border-color)] flex items-center justify-center text-xs font-black">
+              <span className="absolute -top-2 -right-2 w-6 h-6 bg-[var(--accent-red)] text-white border-2 border-[var(--border-color)] flex items-center justify-center text-xs font-black animate-bounce-in">
                 {cartCount}
               </span>
             )}
@@ -81,26 +177,78 @@ function Header({ cartCount, onCartClick, onAccountClick, theme, onThemeToggle }
 }
 
 // Product Card Component
-function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: (product: Product) => void }) {
+function ProductCard({ product, onAddToCart, onViewDetails }: {
+  product: Product;
+  onAddToCart: (product: Product) => void;
+  onViewDetails: (product: Product) => void;
+}) {
+  const hasDiscount = product.originalPrice && product.discountType && product.discountValue;
+  const finalPrice = hasDiscount
+    ? product.discountType === 'percentage'
+      ? product.price * (1 - product.discountValue! / 100)
+      : product.price - product.discountValue!
+    : product.price;
+
   return (
-    <div className="nb-card overflow-hidden">
-      <div className="aspect-square overflow-hidden border-b-[var(--border-width)] border-[var(--border-color)]">
+    <div className="nb-card overflow-hidden group">
+      <div
+        className="aspect-square overflow-hidden border-b-[var(--border-width)] border-[var(--border-color)] cursor-pointer relative"
+        onClick={() => onViewDetails(product)}
+      >
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
+        {hasDiscount && (
+          <div className="absolute top-3 right-3">
+            <span className="nb-badge nb-badge-red px-3 py-1">
+              {product.discountType === 'percentage'
+                ? `${product.discountValue}% OFF`
+                : `$${product.discountValue} OFF`}
+            </span>
+          </div>
+        )}
       </div>
       <div className="p-4">
         <div className="mb-2">
           <span className="nb-badge inline-block mb-2">{product.category}</span>
         </div>
-        <h3 className="nb-heading text-xl mb-2">{product.name}</h3>
-        <p className="text-sm mb-4 text-[var(--text-secondary)]">{product.description}</p>
+        <h3 className="nb-heading text-xl mb-2 cursor-pointer hover:text-[var(--accent-yellow)] transition-colors" onClick={() => onViewDetails(product)}>
+          {product.name}
+        </h3>
+        <p className="text-sm mb-3 text-[var(--text-secondary)]">{product.description}</p>
+
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
+            <span className="text-sm font-bold">{product.rating}</span>
+          </div>
+          <span className="text-xs text-[var(--text-muted)]">({product.reviews})</span>
+        </div>
+
+        <div className="flex flex-wrap gap-1 mb-4">
+          {product.notes.slice(0, 3).map(note => (
+            <span key={note} className="text-xs px-2 py-1 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] font-bold">
+              {note}
+            </span>
+          ))}
+        </div>
+
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-black">${product.price.toFixed(2)}</span>
+          <div>
+            {hasDiscount && (
+              <span className="text-sm line-through text-[var(--text-muted)] mr-2">
+                ${product.originalPrice!.toFixed(2)}
+              </span>
+            )}
+            <span className="text-2xl font-black">${finalPrice.toFixed(2)}</span>
+          </div>
           <button
-            onClick={() => onAddToCart(product)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart(product);
+            }}
             className="nb-button px-4 py-2 flex items-center gap-2"
           >
             <Plus className="w-4 h-4" strokeWidth={3} />
@@ -112,16 +260,132 @@ function ProductCard({ product, onAddToCart }: { product: Product; onAddToCart: 
   );
 }
 
-// Cart Sidebar Component
-function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove, onCheckout }: {
+// Product Detail Modal
+function ProductDetailModal({ product, onClose, onAddToCart }: {
+  product: Product;
+  onClose: () => void;
+  onAddToCart: (product: Product, quantity: number) => void;
+}) {
+  const [quantity, setQuantity] = useState(1);
+  const hasDiscount = product.originalPrice && product.discountType && product.discountValue;
+  const finalPrice = hasDiscount
+    ? product.discountType === 'percentage'
+      ? product.price * (1 - product.discountValue! / 100)
+      : product.price - product.discountValue!
+    : product.price;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="nb-card relative max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-bounce-in">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 nb-button-secondary p-2 z-10"
+        >
+          <X className="w-5 h-5" strokeWidth={3} />
+        </button>
+
+        <div className="grid md:grid-cols-2 gap-0">
+          <div className="aspect-square md:aspect-auto">
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          </div>
+
+          <div className="p-6">
+            <span className="nb-badge inline-block mb-3">{product.category}</span>
+            <h2 className="nb-heading text-3xl mb-3">{product.name}</h2>
+
+            <div className="flex items-center gap-4 mb-4 text-sm">
+              <div className="flex items-center gap-1">
+                <MapPin className="w-4 h-4" strokeWidth={2} />
+                <span>{product.origin}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Flame className="w-4 h-4" strokeWidth={2} />
+                <span>{product.roast} Roast</span>
+              </div>
+            </div>
+
+            <p className="text-[var(--text-secondary)] mb-4">{product.longDescription}</p>
+
+            <div className="mb-4">
+              <h4 className="font-bold mb-2">Tasting Notes</h4>
+              <div className="flex flex-wrap gap-2">
+                {product.notes.map(note => (
+                  <span key={note} className="px-3 py-1 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] font-bold text-sm">
+                    {note}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <span className="text-sm text-[var(--text-muted)]">Package: </span>
+              <span className="font-bold">{product.weight}</span>
+            </div>
+
+            <div className="border-t-2 border-[var(--border-color)] pt-4">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  {hasDiscount && (
+                    <span className="text-lg line-through text-[var(--text-muted)] mr-2">
+                      ${product.originalPrice!.toFixed(2)}
+                    </span>
+                  )}
+                  <span className="text-3xl font-black">${finalPrice.toFixed(2)}</span>
+                </div>
+
+                <div className="flex items-center gap-3 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] px-3 py-2">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="nb-button-secondary p-1"
+                  >
+                    <Minus className="w-4 h-4" strokeWidth={3} />
+                  </button>
+                  <span className="font-bold w-8 text-center">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="nb-button-secondary p-1"
+                  >
+                    <Plus className="w-4 h-4" strokeWidth={3} />
+                  </button>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  onAddToCart(product, quantity);
+                  onClose();
+                }}
+                className="nb-button w-full py-3 flex items-center justify-center gap-2"
+              >
+                <ShoppingBag className="w-5 h-5" strokeWidth={3} />
+                ADD TO CART - ${(finalPrice * quantity).toFixed(2)}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Cart Sidebar
+function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove }: {
   isOpen: boolean;
   onClose: () => void;
   cart: CartItem[];
   onUpdateQuantity: (id: number, quantity: number) => void;
   onRemove: (id: number) => void;
-  onCheckout: () => void;
 }) {
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = cart.reduce((sum, item) => {
+    const hasDiscount = item.originalPrice && item.discountType && item.discountValue;
+    const price = hasDiscount
+      ? item.discountType === 'percentage'
+        ? item.price * (1 - item.discountValue! / 100)
+        : item.price - item.discountValue!
+      : item.price;
+    return sum + price * item.quantity;
+  }, 0);
 
   if (!isOpen) return null;
 
@@ -143,38 +407,47 @@ function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove, onChec
               <p className="text-lg font-bold">Your cart is empty</p>
             </div>
           ) : (
-            cart.map(item => (
-              <div key={item.id} className="nb-card p-4">
-                <div className="flex gap-4">
-                  <img src={item.image} alt={item.name} className="w-20 h-20 object-cover border-2 border-[var(--border-color)]" />
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg mb-1">{item.name}</h3>
-                    <p className="text-sm text-[var(--text-secondary)] mb-2">${item.price.toFixed(2)}</p>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                        className="nb-button-secondary p-1"
-                      >
-                        <Minus className="w-4 h-4" strokeWidth={3} />
-                      </button>
-                      <span className="font-bold w-8 text-center">{item.quantity}</span>
-                      <button
-                        onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                        className="nb-button-secondary p-1"
-                      >
-                        <Plus className="w-4 h-4" strokeWidth={3} />
-                      </button>
-                      <button
-                        onClick={() => onRemove(item.id)}
-                        className="nb-button-secondary p-1 ml-auto"
-                      >
-                        <Trash2 className="w-4 h-4" strokeWidth={3} />
-                      </button>
+            cart.map(item => {
+              const hasDiscount = item.originalPrice && item.discountType && item.discountValue;
+              const price = hasDiscount
+                ? item.discountType === 'percentage'
+                  ? item.price * (1 - item.discountValue! / 100)
+                  : item.price - item.discountValue!
+                : item.price;
+
+              return (
+                <div key={item.id} className="nb-card p-4">
+                  <div className="flex gap-4">
+                    <img src={item.image} alt={item.name} className="w-20 h-20 object-cover border-2 border-[var(--border-color)]" />
+                    <div className="flex-1">
+                      <h3 className="font-bold text-lg mb-1">{item.name}</h3>
+                      <p className="text-sm text-[var(--text-secondary)] mb-2">${price.toFixed(2)}</p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                          className="nb-button-secondary p-1"
+                        >
+                          <Minus className="w-4 h-4" strokeWidth={3} />
+                        </button>
+                        <span className="font-bold w-8 text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                          className="nb-button-secondary p-1"
+                        >
+                          <Plus className="w-4 h-4" strokeWidth={3} />
+                        </button>
+                        <button
+                          onClick={() => onRemove(item.id)}
+                          className="nb-button-secondary p-1 ml-auto"
+                        >
+                          <Trash2 className="w-4 h-4" strokeWidth={3} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -184,7 +457,7 @@ function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove, onChec
               <span className="font-bold text-lg">TOTAL:</span>
               <span className="font-black text-2xl">${total.toFixed(2)}</span>
             </div>
-            <button onClick={onCheckout} className="nb-button w-full py-3 text-lg">
+            <button className="nb-button w-full py-3 text-lg">
               CHECKOUT
             </button>
           </div>
@@ -199,16 +472,30 @@ function AppContent() {
   const { theme, toggleTheme } = useTheme();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const addToCart = (product: Product) => {
+  const categories = ['All', ...Array.from(new Set(PRODUCTS.map(p => p.category)))];
+
+  const filteredProducts = PRODUCTS.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.notes.some(note => note.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const addToCart = (product: Product, quantity: number = 1) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
         return prev.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
         );
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity }];
     });
     setIsCartOpen(true);
   };
@@ -234,7 +521,6 @@ function AppContent() {
       <Header
         cartCount={cartCount}
         onCartClick={() => setIsCartOpen(true)}
-        onAccountClick={() => {}}
         theme={theme}
         onThemeToggle={toggleTheme}
       />
@@ -258,14 +544,103 @@ function AppContent() {
         </div>
       </section>
 
-      {/* Products Grid */}
+      {/* Search and Filters */}
       <section className="m-4">
-        <h2 className="nb-heading text-3xl mb-6">OUR COFFEES</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {PRODUCTS.map(product => (
-            <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
-          ))}
+        <div className="nb-card p-4 mb-6">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" strokeWidth={2} />
+              <input
+                type="text"
+                placeholder="Search coffees..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="nb-input w-full pl-10 pr-4 py-3"
+              />
+            </div>
+            <div className="flex gap-2">
+              {categories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`nb-button px-4 py-2 ${selectedCategory === category ? 'bg-[var(--accent-pink)]' : ''}`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`nb-button-secondary p-3 ${viewMode === 'grid' ? 'bg-[var(--accent-blue)]' : ''}`}
+              >
+                <Grid className="w-5 h-5" strokeWidth={3} />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`nb-button-secondary p-3 ${viewMode === 'list' ? 'bg-[var(--accent-blue)]' : ''}`}
+              >
+                <List className="w-5 h-5" strokeWidth={3} />
+              </button>
+            </div>
+          </div>
         </div>
+
+        <p className="text-sm mb-4 font-bold">
+          Showing {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+          {searchQuery && ` for "${searchQuery}"`}
+        </p>
+      </section>
+
+      {/* Products Grid/List */}
+      <section className="m-4">
+        {viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map(product => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={addToCart}
+                onViewDetails={setSelectedProduct}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredProducts.map(product => (
+              <div key={product.id} className="nb-card p-4 flex gap-4">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-32 h-32 object-cover border-2 border-[var(--border-color)] cursor-pointer"
+                  onClick={() => setSelectedProduct(product)}
+                />
+                <div className="flex-1">
+                  <span className="nb-badge inline-block mb-2">{product.category}</span>
+                  <h3 className="nb-heading text-xl mb-2 cursor-pointer" onClick={() => setSelectedProduct(product)}>
+                    {product.name}
+                  </h3>
+                  <p className="text-sm mb-2 text-[var(--text-secondary)]">{product.description}</p>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Star className="w-4 h-4 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
+                    <span className="text-sm font-bold">{product.rating}</span>
+                    <span className="text-xs text-[var(--text-muted)]">({product.reviews})</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-black">${product.price.toFixed(2)}</span>
+                    <button
+                      onClick={() => addToCart(product)}
+                      className="nb-button px-4 py-2 flex items-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" strokeWidth={3} />
+                      ADD
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Footer */}
@@ -291,13 +666,22 @@ function AppContent() {
         </div>
       </footer>
 
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          onAddToCart={addToCart}
+        />
+      )}
+
+      {/* Cart Sidebar */}
       <CartSidebar
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cart={cart}
         onUpdateQuantity={updateQuantity}
         onRemove={removeFromCart}
-        onCheckout={() => alert('Checkout functionality coming soon!')}
       />
     </div>
   );
