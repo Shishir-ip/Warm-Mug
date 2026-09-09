@@ -117,7 +117,7 @@ function CategoriesTab({ categories, onAdd, onEdit, onDelete, showForm, editingC
 }
 
 // Campaigns Tab Component
-function CampaignsTab({ campaigns, onAdd, onEdit, onDelete, onToggleActive, showForm, editingCampaign, onSave, onCancel }: any) {
+function CampaignsTab({ campaigns, products, onAdd, onEdit, onDelete, onToggleActive, showForm, editingCampaign, onSave, onCancel, onSaveProducts }: any) {
   const [formData, setFormData] = useState({
     title: '',
     subtitle: '',
@@ -130,6 +130,8 @@ function CampaignsTab({ campaigns, onAdd, onEdit, onDelete, onToggleActive, show
     is_active: true,
     display_order: 0
   });
+  const [selectedCampaignProducts, setSelectedCampaignProducts] = useState<Record<number, number[]>>({});
+  const [showProductSelector, setShowProductSelector] = useState<number | null>(null);
 
   useEffect(() => {
     if (editingCampaign) {
@@ -160,6 +162,63 @@ function CampaignsTab({ campaigns, onAdd, onEdit, onDelete, onToggleActive, show
       });
     }
   }, [editingCampaign, showForm]);
+
+  // Fetch campaign products
+  useEffect(() => {
+    const fetchCampaignProducts = async () => {
+      const productsMap: Record<number, number[]> = {};
+      for (const campaign of campaigns) {
+        const { data: campaignProducts } = await supabase
+          .from('campaign_products')
+          .select('product_id')
+          .eq('campaign_id', campaign.id);
+        
+        productsMap[campaign.id] = (campaignProducts || []).map((cp: any) => cp.product_id);
+      }
+      setSelectedCampaignProducts(productsMap);
+    };
+    
+    if (campaigns.length > 0) {
+      fetchCampaignProducts();
+    }
+  }, [campaigns]);
+
+  const toggleProductForCampaign = (campaignId: number, productId: number) => {
+    setSelectedCampaignProducts(prev => {
+      const current = prev[campaignId] || [];
+      const updated = current.includes(productId)
+        ? current.filter(id => id !== productId)
+        : [...current, productId];
+      return { ...prev, [campaignId]: updated };
+    });
+  };
+
+  const handleSaveCampaignProducts = async (campaignId: number) => {
+    const productIds = selectedCampaignProducts[campaignId] || [];
+    
+    // Delete existing assignments
+    await supabase
+      .from('campaign_products')
+      .delete()
+      .eq('campaign_id', campaignId);
+    
+    // Insert new assignments
+    if (productIds.length > 0) {
+      const assignments = productIds.map(productId => ({
+        campaign_id: campaignId,
+        product_id: productId
+      }));
+      
+      await supabase
+      .from('campaign_products')
+      .insert(assignments);
+    }
+    
+    setShowProductSelector(null);
+    if (onSaveProducts) {
+      onSaveProducts();
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -315,10 +374,22 @@ function CampaignsTab({ campaigns, onAdd, onEdit, onDelete, onToggleActive, show
                     </span>
                   </div>
                   <p className="text-sm text-[var(--text-secondary)] mb-3 line-clamp-2">{camp.description}</p>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-xs font-bold">
+                      PRODUCTS: {(selectedCampaignProducts[camp.id] || []).length}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
                     <button onClick={() => onEdit(camp)} className="nb-button-secondary px-3 py-1.5 text-xs flex items-center gap-1">
                       <Edit2 className="w-3 h-3" strokeWidth={3} />
                       EDIT
+                    </button>
+                    <button 
+                      onClick={() => setShowProductSelector(camp.id)} 
+                      className="nb-button-secondary px-3 py-1.5 text-xs flex items-center gap-1"
+                    >
+                      <ShoppingBag className="w-3 h-3" strokeWidth={3} />
+                      MANAGE PRODUCTS
                     </button>
                     <button onClick={() => onToggleActive(camp.id, camp.is_active)} className="nb-button-secondary px-3 py-1.5 text-xs">
                       {camp.is_active ? 'DEACTIVATE' : 'ACTIVATE'}
@@ -330,6 +401,52 @@ function CampaignsTab({ campaigns, onAdd, onEdit, onDelete, onToggleActive, show
                   </div>
                 </div>
               </div>
+
+              {/* Product Selector Modal */}
+              {showProductSelector === camp.id && (
+                <div className="border-t-2 border-[var(--border-color)] p-4 bg-[var(--bg-tertiary)]">
+                  <h4 className="nb-heading text-base mb-3">SELECT PRODUCTS FOR THIS CAMPAIGN</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-4 max-h-96 overflow-y-auto">
+                    {products.map((product: any) => {
+                      const isSelected = (selectedCampaignProducts[camp.id] || []).includes(product.id);
+                      return (
+                        <div 
+                          key={product.id} 
+                          onClick={() => toggleProductForCampaign(camp.id, product.id)}
+                          className={`nb-card p-2 cursor-pointer transition-all ${
+                            isSelected ? 'bg-[var(--accent-green)]' : 'hover:bg-[var(--bg-secondary)]'
+                          }`}
+                        >
+                          <img src={product.image} alt={product.name} className="w-full h-20 object-cover mb-2" />
+                          <p className="text-xs font-bold line-clamp-2">{product.name}</p>
+                          <p className="text-xs text-[var(--text-muted)]">${product.price}</p>
+                          {isSelected && (
+                            <div className="mt-1">
+                              <span className="nb-badge nb-badge-green text-[10px]">SELECTED</span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => handleSaveCampaignProducts(camp.id)}
+                      className="nb-button px-4 py-2 text-xs flex items-center gap-2"
+                    >
+                      <Save className="w-3 h-3" strokeWidth={3} />
+                      SAVE PRODUCTS
+                    </button>
+                    <button 
+                      onClick={() => setShowProductSelector(null)}
+                      className="nb-button-secondary px-4 py-2 text-xs flex items-center gap-2"
+                    >
+                      <X className="w-3 h-3" strokeWidth={3} />
+                      CANCEL
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -1181,6 +1298,7 @@ export default function AdminDashboard({ onBack }: AdminDashboardProps) {
       {activeTab === 'campaigns' && (
         <CampaignsTab 
           campaigns={campaigns}
+          products={products}
           onAdd={() => { setEditingCampaign(null); setShowCampaignForm(true); }}
           onEdit={(camp: any) => { setEditingCampaign(camp); setShowCampaignForm(true); }}
           onDelete={deleteCampaign}
@@ -1189,6 +1307,7 @@ export default function AdminDashboard({ onBack }: AdminDashboardProps) {
           editingCampaign={editingCampaign}
           onSave={saveCampaign}
           onCancel={() => { setShowCampaignForm(false); setEditingCampaign(null); }}
+          onSaveProducts={fetchAllData}
         />
       )}
 

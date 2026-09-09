@@ -6,6 +6,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import AuthPage from './pages/AuthPage';
 import UserAccountPage from './pages/UserAccountPage';
+import CampaignPage from './pages/CampaignPage';
 import Carousel from './components/Carousel';
 import { supabase } from './lib/supabase';
 
@@ -496,7 +497,7 @@ function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove, onChec
 // Main App Content
 function AppContent() {
   const { theme, toggleTheme } = useTheme();
-  const [currentPage, setCurrentPage] = useState<'home' | 'checkout' | 'admin' | 'admin-login' | 'auth' | 'account'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'checkout' | 'admin' | 'admin-login' | 'auth' | 'account' | 'campaign'>('home');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -505,6 +506,7 @@ function AppContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
 
   // Check auth state on mount
   useEffect(() => {
@@ -755,6 +757,20 @@ function AppContent() {
     );
   }
 
+  if (currentPage === 'campaign' && selectedCampaignId) {
+    return (
+      <CampaignPage
+        campaignId={selectedCampaignId}
+        onBack={() => {
+          setSelectedCampaignId(null);
+          setCurrentPage('home');
+        }}
+        onAddToCart={addToCart}
+        onViewProduct={setSelectedProduct}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <Header
@@ -770,13 +786,8 @@ function AppContent() {
       {/* Campaign Carousel */}
       <section className="m-2 sm:m-4">
         <Carousel onCampaignClick={(campaignId) => {
-          // Handle campaign click - you can navigate to campaign page or show campaign details
-          console.log('Campaign clicked:', campaignId);
-          // For now, just scroll to products section
-          const productsSection = document.getElementById('products-section');
-          if (productsSection) {
-            productsSection.scrollIntoView({ behavior: 'smooth' });
-          }
+          setSelectedCampaignId(campaignId);
+          setCurrentPage('campaign');
         }} />
       </section>
 
