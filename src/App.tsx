@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
-import { Sun, Moon, ShoppingBag, Coffee, User, Search, X, Plus, Minus, Trash2, Grid, List, Star, MapPin, Flame, Shield } from 'lucide-react';
+import { Sun, Moon, ShoppingBag, Coffee, User, Search, X, Plus, Minus, Trash2, Grid, List, Star, MapPin, Flame, Shield, LogIn } from 'lucide-react';
 import CheckoutPage from './pages/CheckoutPage';
 import AdminDashboard from './pages/AdminDashboard';
+import AuthPage from './pages/AuthPage';
+import UserAccountPage from './pages/UserAccountPage';
 import { supabase } from './lib/supabase';
 
 // Types
@@ -130,10 +132,11 @@ const PRODUCTS: Product[] = [
 ];
 
 // Header Component
-function Header({ cartCount, onCartClick, onAdminClick, theme, onThemeToggle }: {
+function Header({ cartCount, onCartClick, onAdminClick, onAccountClick, theme, onThemeToggle }: {
   cartCount: number;
   onCartClick: () => void;
   onAdminClick: () => void;
+  onAccountClick: () => void;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
 }) {
@@ -167,7 +170,7 @@ function Header({ cartCount, onCartClick, onAdminClick, theme, onThemeToggle }: 
             <Shield className="w-5 h-5" strokeWidth={3} />
           </button>
 
-          <button className="nb-button-secondary p-3">
+          <button onClick={onAccountClick} className="nb-button-secondary p-3">
             <User className="w-5 h-5" strokeWidth={3} />
           </button>
 
@@ -483,13 +486,31 @@ function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove, onChec
 // Main App Content
 function AppContent() {
   const { theme, toggleTheme } = useTheme();
-  const [currentPage, setCurrentPage] = useState<'home' | 'checkout' | 'admin'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'checkout' | 'admin' | 'auth' | 'account'>('home');
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // Check auth state on mount
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) {
+        setCurrentUser(data.user);
+      }
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUser(session?.user || null);
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []);
 
   const categories = ['All', ...Array.from(new Set(PRODUCTS.map(p => p.category)))];
 
@@ -593,6 +614,16 @@ function AppContent() {
     }
   };
 
+  const handleAuthSuccess = () => {
+    setCurrentPage('account');
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setCurrentUser(null);
+    setCurrentPage('home');
+  };
+
   // Render different pages
   if (currentPage === 'checkout') {
     return (
@@ -613,12 +644,39 @@ function AppContent() {
     );
   }
 
+  if (currentPage === 'auth') {
+    return (
+      <AuthPage
+        onBack={() => setCurrentPage('home')}
+        onAuthSuccess={handleAuthSuccess}
+      />
+    );
+  }
+
+  if (currentPage === 'account') {
+    if (!currentUser) {
+      return (
+        <AuthPage
+          onBack={() => setCurrentPage('home')}
+          onAuthSuccess={handleAuthSuccess}
+        />
+      );
+    }
+    return (
+      <UserAccountPage
+        onBack={() => setCurrentPage('home')}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <Header
         cartCount={cartCount}
         onCartClick={() => setIsCartOpen(true)}
         onAdminClick={() => setCurrentPage('admin')}
+        onAccountClick={() => setCurrentPage('account')}
         theme={theme}
         onThemeToggle={toggleTheme}
       />
