@@ -186,7 +186,7 @@ function Header({ cartCount, onCartClick, onAdminClick, onAccountClick, theme, o
           >
             <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} />
             {cartCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-[var(--accent-red)] text-white border-2 border-[var(--border-color)] flex items-center justify-center text-[10px] sm:text-xs font-black animate-bounce-in">
+              <span className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-[var(--accent-red)] text-[var(--text-primary)] border-2 border-[var(--border-color)] flex items-center justify-center text-[10px] sm:text-xs font-black animate-bounce-in">
                 {cartCount}
               </span>
             )}
