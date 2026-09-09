@@ -28,23 +28,25 @@
   --accent-red: #ef4444;
   --accent-purple: #8b5cf6;
   --card-bg: #ffffff;
+  --input-bg: #ffffff;
   --button-bg: #fbbf24;
   --button-hover: #f59e0b;
 }
 
 [data-theme="dark"] {
-  /* Dark Mode - True Black Theme */
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #1a1a1a;
-  --text-primary: #ffffff;
-  --text-secondary: #e0e0e0;
-  --text-muted: #a0a0a0;
-  --border-color: #ffffff;
-  --shadow-hard: 6px 6px 0px #ffffff;
-  --shadow-hard-lg: 8px 8px 0px #ffffff;
-  --shadow-hard-sm: 4px 4px 0px #ffffff;
-  --card-bg: #0a0a0a;
+  /* Dark Mode - Dark Grey Theme */
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #181818;
+  --bg-tertiary: #1e1e1e;
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #707070;
+  --border-color: #3a3a3a;
+  --shadow-hard: 6px 6px 0px #3a3a3a;
+  --shadow-hard-lg: 8px 8px 0px #3a3a3a;
+  --shadow-hard-sm: 4px 4px 0px #3a3a3a;
+  --card-bg: #181818;
+  --input-bg: #202020;
   --button-bg: #fbbf24;
   --button-hover: #f59e0b;
   --accent-yellow: #fbbf24;
@@ -102,7 +104,7 @@ h1, h2, h3, h4, h5, h6, p, span, label, input, button, a, li, ul, ol, div {
 [data-theme="dark"] input,
 [data-theme="dark"] textarea,
 [data-theme="dark"] select {
-  background-color: var(--bg-secondary);
+  background-color: var(--input-bg);
   color: var(--text-primary);
   border-color: var(--border-color);
 }
@@ -182,7 +184,7 @@ h1, h2, h3, h4, h5, h6, p, span, label, input, button, a, li, ul, ol, div {
 }
 
 .nb-input {
-  background-color: var(--bg-secondary);
+  background-color: var(--input-bg);
   color: var(--text-primary);
   border: var(--border-width) solid var(--border-color);
   box-shadow: var(--shadow-hard-sm);
