@@ -342,25 +342,43 @@ function CampaignsTab({ campaigns, onAdd, onEdit, onDelete, onToggleActive, show
 function SettingsTab({ settings, onSave }: any) {
   const [formData, setFormData] = useState({
     store_name: '',
+    store_tagline: '',
     store_email: '',
     store_phone: '',
     store_address: '',
     store_hours: '',
+    about_text: '',
+    story_text: '',
+    mission_text: '',
+    instagram: '',
+    twitter: '',
+    facebook: '',
     free_shipping_threshold: '',
     shipping_flat_rate: '',
-    tax_rate: ''
+    tax_rate: '',
+    return_policy: '',
+    privacy_policy: ''
   });
 
   useEffect(() => {
     setFormData({
       store_name: settings.store_name || '',
+      store_tagline: settings.store_tagline || '',
       store_email: settings.store_email || '',
       store_phone: settings.store_phone || '',
       store_address: settings.store_address || '',
       store_hours: settings.store_hours || '',
+      about_text: settings.about_text || '',
+      story_text: settings.story_text || '',
+      mission_text: settings.mission_text || '',
+      instagram: settings.instagram || '',
+      twitter: settings.twitter || '',
+      facebook: settings.facebook || '',
       free_shipping_threshold: settings.free_shipping_threshold || '',
       shipping_flat_rate: settings.shipping_flat_rate || '',
-      tax_rate: settings.tax_rate || ''
+      tax_rate: settings.tax_rate || '',
+      return_policy: settings.return_policy || '',
+      privacy_policy: settings.privacy_policy || ''
     });
   }, [settings]);
 
@@ -387,15 +405,25 @@ function SettingsTab({ settings, onSave }: any) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold mb-2">STORE HOURS</label>
+                <label className="block text-sm font-bold mb-2">TAGLINE</label>
                 <input
                   type="text"
-                  value={formData.store_hours}
-                  onChange={(e) => setFormData({ ...formData, store_hours: e.target.value })}
+                  value={formData.store_tagline}
+                  onChange={(e) => setFormData({ ...formData, store_tagline: e.target.value })}
                   className="nb-input w-full px-4 py-3"
-                  placeholder="Mon-Fri: 7am-7pm"
+                  placeholder="Specialty Coffee"
                 />
               </div>
+            </div>
+            <div className="mt-4">
+              <label className="block text-sm font-bold mb-2">STORE HOURS</label>
+              <input
+                type="text"
+                value={formData.store_hours}
+                onChange={(e) => setFormData({ ...formData, store_hours: e.target.value })}
+                className="nb-input w-full px-4 py-3"
+                placeholder="Mon-Fri: 7am-7pm, Sat-Sun: 8am-5pm"
+              />
             </div>
           </div>
 
@@ -433,6 +461,78 @@ function SettingsTab({ settings, onSave }: any) {
           </div>
 
           <div>
+            <h3 className="font-bold text-lg mb-4">ABOUT & CONTENT</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">ABOUT TEXT (Short)</label>
+                <textarea
+                  value={formData.about_text}
+                  onChange={(e) => setFormData({ ...formData, about_text: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                  rows={2}
+                  placeholder="Brief description for footer"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">OUR STORY</label>
+                <textarea
+                  value={formData.story_text}
+                  onChange={(e) => setFormData({ ...formData, story_text: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                  rows={3}
+                  placeholder="Tell your brand story"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">OUR MISSION</label>
+                <textarea
+                  value={formData.mission_text}
+                  onChange={(e) => setFormData({ ...formData, mission_text: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                  rows={3}
+                  placeholder="What drives your business"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-bold text-lg mb-4">SOCIAL MEDIA</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">INSTAGRAM URL</label>
+                <input
+                  type="url"
+                  value={formData.instagram}
+                  onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">TWITTER URL</label>
+                <input
+                  type="url"
+                  value={formData.twitter}
+                  onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                  placeholder="https://twitter.com/..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">FACEBOOK URL</label>
+                <input
+                  type="url"
+                  value={formData.facebook}
+                  onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                  placeholder="https://facebook.com/..."
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
             <h3 className="font-bold text-lg mb-4">SHIPPING & PRICING</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
@@ -462,6 +562,32 @@ function SettingsTab({ settings, onSave }: any) {
                   value={formData.tax_rate}
                   onChange={(e) => setFormData({ ...formData, tax_rate: e.target.value })}
                   className="nb-input w-full px-4 py-3"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-bold text-lg mb-4">POLICIES</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">RETURN POLICY</label>
+                <textarea
+                  value={formData.return_policy}
+                  onChange={(e) => setFormData({ ...formData, return_policy: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                  rows={3}
+                  placeholder="Your return policy details"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold mb-2">PRIVACY POLICY</label>
+                <textarea
+                  value={formData.privacy_policy}
+                  onChange={(e) => setFormData({ ...formData, privacy_policy: e.target.value })}
+                  className="nb-input w-full px-4 py-3"
+                  rows={3}
+                  placeholder="Your privacy policy details"
                 />
               </div>
             </div>

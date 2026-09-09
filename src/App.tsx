@@ -221,8 +221,8 @@ function ProductCard({ product, onAddToCart, onViewDetails }: {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
         {hasDiscount && (
-          <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
-            <span className="nb-badge nb-badge-red px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm">
+          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2">
+            <span className="nb-badge nb-badge-red px-1.5 py-0.5 sm:px-2 sm:py-1 text-[10px] sm:text-xs">
               {product.discountType === 'percentage'
                 ? `${product.discountValue}% OFF`
                 : `$${product.discountValue} OFF`}
@@ -230,52 +230,52 @@ function ProductCard({ product, onAddToCart, onViewDetails }: {
           </div>
         )}
       </div>
-      <div className="p-3 sm:p-4 flex flex-col flex-1">
-        <div className="mb-2">
-          <span className="nb-badge inline-block mb-2 text-xs">{product.category}</span>
+      <div className="p-2 sm:p-3 flex flex-col flex-1">
+        <div className="mb-1">
+          <span className="nb-badge inline-block mb-1 text-[10px] sm:text-xs">{product.category}</span>
         </div>
         <h3 
-          className="nb-heading text-base sm:text-xl mb-2 cursor-pointer hover:text-[var(--accent-yellow)] transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]" 
+          className="nb-heading text-sm sm:text-base mb-1 cursor-pointer hover:text-[var(--accent-yellow)] transition-colors line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem]" 
           onClick={() => onViewDetails(product)}
           title={product.name}
         >
           {product.name}
         </h3>
-        <p className="text-xs sm:text-sm mb-3 text-[var(--text-secondary)] line-clamp-2">{product.description}</p>
+        <p className="text-[10px] sm:text-xs mb-2 text-[var(--text-secondary)] line-clamp-2">{product.description}</p>
 
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center gap-1">
-            <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
-            <span className="text-xs sm:text-sm font-bold">{product.rating}</span>
+        <div className="flex items-center gap-1.5 mb-2">
+          <div className="flex items-center gap-0.5">
+            <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
+            <span className="text-[10px] sm:text-xs font-bold">{product.rating}</span>
           </div>
-          <span className="text-xs text-[var(--text-muted)]">({product.reviews})</span>
+          <span className="text-[10px] text-[var(--text-muted)]">({product.reviews})</span>
         </div>
 
-        <div className="flex flex-wrap gap-1 mb-4">
+        <div className="flex flex-wrap gap-0.5 mb-2">
           {product.notes.slice(0, 2).map(note => (
-            <span key={note} className="text-xs px-2 py-0.5 sm:py-1 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] font-bold">
+            <span key={note} className="text-[10px] sm:text-xs px-1.5 py-0.5 bg-[var(--bg-tertiary)] border-2 border-[var(--border-color)] font-bold">
               {note}
             </span>
           ))}
         </div>
 
-        <div className="flex items-center justify-between gap-2 mt-auto">
+        <div className="flex items-center justify-between gap-1.5 mt-auto">
           <div className="flex-1 min-w-0">
             {hasDiscount && (
-              <span className="text-xs sm:text-sm line-through text-[var(--text-muted)] mr-1 sm:mr-2 block sm:inline">
+              <span className="text-[10px] sm:text-xs line-through text-[var(--text-muted)] mr-1 block sm:inline">
                 ${product.originalPrice!.toFixed(2)}
               </span>
             )}
-            <span className="text-lg sm:text-2xl font-black block sm:inline">${finalPrice.toFixed(2)}</span>
+            <span className="text-base sm:text-lg font-black block sm:inline">${finalPrice.toFixed(2)}</span>
           </div>
           <button
             onClick={(e) => {
               e.stopPropagation();
               onAddToCart(product);
             }}
-            className="nb-button px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0"
+            className="nb-button px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1 text-[10px] sm:text-xs flex-shrink-0"
           >
-            <Plus className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={3} />
+            <Plus className="w-2.5 h-2.5 sm:w-3 sm:h-3" strokeWidth={3} />
             <span className="hidden sm:inline">ADD</span>
             <span className="sm:hidden">+</span>
           </button>
@@ -496,7 +496,7 @@ function CartSidebar({ isOpen, onClose, cart, onUpdateQuantity, onRemove, onChec
 // Main App Content
 function AppContent() {
   const { theme, toggleTheme } = useTheme();
-  const [currentPage, setCurrentPage] = useState<'home' | 'checkout' | 'admin' | 'auth' | 'account'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'checkout' | 'admin' | 'admin-login' | 'auth' | 'account'>('home');
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -670,6 +670,23 @@ function AppContent() {
     );
   }
 
+  if (currentPage === 'admin-login') {
+    return (
+      <AdminLogin
+        onBack={() => setCurrentPage('home')}
+        onAdminLogin={() => {
+          // Reload current user to get admin status
+          supabase.auth.getUser().then(({ data }) => {
+            if (data?.user) {
+              setCurrentUser(data.user);
+              setCurrentPage('admin');
+            }
+          });
+        }}
+      />
+    );
+  }
+
   if (currentPage === 'admin') {
     // Check if user is authenticated and has admin role
     if (!currentUser) {
@@ -752,26 +769,15 @@ function AppContent() {
 
       {/* Campaign Carousel */}
       <section className="m-2 sm:m-4">
-        <Carousel />
-      </section>
-
-      {/* Hero Section */}
-      <section className="m-2 sm:m-4">
-        <div className="nb-card p-4 sm:p-8 md:p-12 bg-[var(--accent-yellow)]">
-          <div className="max-w-2xl">
-            <h2 className="nb-heading text-2xl sm:text-4xl md:text-6xl mb-3 sm:mb-4 leading-tight">
-              EXCEPTIONAL COFFEE, DELIVERED TO YOU
-            </h2>
-            <p className="text-sm sm:text-lg mb-4 sm:mb-6 font-bold">
-              Discover our curated selection of single-origin beans and artisan blends, sourced from the world's finest growing regions.
-            </p>
-            <div className="flex flex-wrap gap-2 sm:gap-3">
-              <span className="nb-badge nb-badge-pink px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">☕ ETHICALLY SOURCED</span>
-              <span className="nb-badge nb-badge-blue px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">🔥 ROASTED TO ORDER</span>
-              <span className="nb-badge nb-badge-green px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm">🚚 FREE SHIPPING 50+</span>
-            </div>
-          </div>
-        </div>
+        <Carousel onCampaignClick={(campaignId) => {
+          // Handle campaign click - you can navigate to campaign page or show campaign details
+          console.log('Campaign clicked:', campaignId);
+          // For now, just scroll to products section
+          const productsSection = document.getElementById('products-section');
+          if (productsSection) {
+            productsSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }} />
       </section>
 
       {/* Search and Filters */}
@@ -823,9 +829,9 @@ function AppContent() {
       </section>
 
       {/* Products Grid/List */}
-      <section className="m-2 sm:m-4">
+      <section className="m-2 sm:m-4" id="products-section">
         {viewMode === 'grid' ? (
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
             {filteredProducts.map(product => (
               <ProductCard
                 key={product.id}
@@ -836,37 +842,37 @@ function AppContent() {
             ))}
           </div>
         ) : (
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-2 sm:space-y-3">
             {filteredProducts.map(product => (
-              <div key={product.id} className="nb-card p-3 sm:p-4 flex gap-3 sm:gap-4">
+              <div key={product.id} className="nb-card p-2 sm:p-3 flex gap-2 sm:gap-3">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-24 h-24 sm:w-32 sm:h-32 object-cover border-2 border-[var(--border-color)] cursor-pointer flex-shrink-0"
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-cover border-2 border-[var(--border-color)] cursor-pointer flex-shrink-0"
                   onClick={() => setSelectedProduct(product)}
                 />
                 <div className="flex-1 min-w-0">
-                  <span className="nb-badge inline-block mb-2 text-xs">{product.category}</span>
+                  <span className="nb-badge inline-block mb-1 text-[10px] sm:text-xs">{product.category}</span>
                   <h3 
-                    className="nb-heading text-base sm:text-xl mb-1 sm:mb-2 cursor-pointer line-clamp-2" 
+                    className="nb-heading text-sm sm:text-base mb-0.5 sm:mb-1 cursor-pointer line-clamp-1" 
                     onClick={() => setSelectedProduct(product)}
                     title={product.name}
                   >
                     {product.name}
                   </h3>
-                  <p className="text-xs sm:text-sm mb-2 text-[var(--text-secondary)] line-clamp-2">{product.description}</p>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
-                    <span className="text-xs sm:text-sm font-bold">{product.rating}</span>
-                    <span className="text-xs text-[var(--text-muted)]">({product.reviews})</span>
+                  <p className="text-[10px] sm:text-xs mb-1.5 text-[var(--text-secondary)] line-clamp-1">{product.description}</p>
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-[var(--accent-yellow)] text-[var(--accent-yellow)]" strokeWidth={2} />
+                    <span className="text-[10px] sm:text-xs font-bold">{product.rating}</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">({product.reviews})</span>
                   </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-lg sm:text-2xl font-black">${product.price.toFixed(2)}</span>
+                  <div className="flex items-center justify-between gap-1.5">
+                    <span className="text-base sm:text-lg font-black">${product.price.toFixed(2)}</span>
                     <button
                       onClick={() => addToCart(product)}
-                      className="nb-button px-3 py-1.5 sm:px-4 sm:py-2 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0"
+                      className="nb-button px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1 text-[10px] sm:text-xs flex-shrink-0"
                     >
-                      <Plus className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={3} />
+                      <Plus className="w-2.5 h-2.5 sm:w-3 sm:h-3" strokeWidth={3} />
                       <span className="hidden sm:inline">ADD</span>
                       <span className="sm:hidden">+</span>
                     </button>
@@ -879,32 +885,32 @@ function AppContent() {
       </section>
 
       {/* Footer */}
-      <footer className="nb-card m-4 mt-12 p-4 sm:p-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
+      <footer className="nb-card m-2 sm:m-4 mt-8 sm:mt-12 p-3 sm:p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
           <div>
-            <h3 className="nb-heading text-lg sm:text-xl mb-3 sm:mb-4">WARM MUG</h3>
-            <p className="text-xs sm:text-sm break-words">Exceptional specialty coffee, roasted to order and delivered fresh to your door.</p>
+            <h3 className="nb-heading text-sm sm:text-base mb-2">WARM MUG</h3>
+            <p className="text-[10px] sm:text-xs break-words">Specialty coffee, roasted to order.</p>
           </div>
           <div>
-            <h3 className="nb-heading text-lg sm:text-xl mb-3 sm:mb-4">CONTACT</h3>
-            <p className="text-xs sm:text-sm break-all">hello@warmmug.com</p>
-            <p className="text-xs sm:text-sm break-all">+1 (503) 555-BREW</p>
+            <h3 className="nb-heading text-sm sm:text-base mb-2">CONTACT</h3>
+            <p className="text-[10px] sm:text-xs break-all">hello@warmmug.com</p>
+            <p className="text-[10px] sm:text-xs break-all">+1 (503) 555-BREW</p>
           </div>
-          <div className="sm:col-span-2 md:col-span-1">
-            <h3 className="nb-heading text-lg sm:text-xl mb-3 sm:mb-4">HOURS</h3>
-            <p className="text-xs sm:text-sm">Mon-Fri: 7am - 7pm</p>
-            <p className="text-xs sm:text-sm">Sat-Sun: 8am - 5pm</p>
+          <div className="col-span-2 sm:col-span-1">
+            <h3 className="nb-heading text-sm sm:text-base mb-2">HOURS</h3>
+            <p className="text-[10px] sm:text-xs">Mon-Fri: 7am-7pm</p>
+            <p className="text-[10px] sm:text-xs">Sat-Sun: 8am-5pm</p>
           </div>
         </div>
-        <div className="border-t-2 border-[var(--border-color)] mt-6 sm:mt-8 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs sm:text-sm font-bold text-center sm:text-left">
-            © 2026 WARM MUG COFFEE CO. ALL RIGHTS RESERVED.
+        <div className="border-t-2 border-[var(--border-color)] pt-3 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-[10px] sm:text-xs font-bold text-center sm:text-left">
+            © 2026 WARM MUG COFFEE CO.
           </p>
           <button
-            onClick={() => setCurrentPage('auth')}
-            className="nb-button-secondary px-4 py-2 text-xs sm:text-sm flex items-center gap-2"
+            onClick={() => setCurrentPage('admin-login')}
+            className="nb-button-secondary px-3 py-1.5 text-[10px] sm:text-xs flex items-center gap-1.5"
           >
-            <Shield className="w-4 h-4" strokeWidth={3} />
+            <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={3} />
             STAFF LOGIN
           </button>
         </div>
