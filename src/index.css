@@ -34,19 +34,25 @@
 
 [data-theme="dark"] {
   /* Dark Mode */
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #2d2d2d;
-  --bg-tertiary: #404040;
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2d2d2d;
   --text-primary: #fef3c7;
-  --text-secondary: #d4d4d4;
+  --text-secondary: #e5e5e5;
   --text-muted: #a3a3a3;
   --border-color: #fef3c7;
   --shadow-hard: 6px 6px 0px #fef3c7;
   --shadow-hard-lg: 8px 8px 0px #fef3c7;
   --shadow-hard-sm: 4px 4px 0px #fef3c7;
-  --card-bg: #2d2d2d;
+  --card-bg: #1a1a1a;
   --button-bg: #fbbf24;
   --button-hover: #f59e0b;
+  --accent-yellow: #fbbf24;
+  --accent-pink: #ec4899;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-purple: #8b5cf6;
 }
 
 /* Base Styles */

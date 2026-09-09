@@ -148,8 +148,8 @@ export default function Carousel({ onCampaignClick }: CarouselProps) {
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all ${
                 index === currentIndex
-                  ? 'bg-white w-6 sm:w-8'
-                  : 'bg-white/50 hover:bg-white/75'
+                  ? 'bg-[var(--text-primary)] w-6 sm:w-8'
+                  : 'bg-[var(--text-primary)]/50 hover:bg-[var(--text-primary)]/75'
               }`}
             />
           ))}
