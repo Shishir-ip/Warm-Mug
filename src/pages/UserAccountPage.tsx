@@ -248,15 +248,15 @@ export default function UserAccountPage({ onBack, onLogout }: UserAccountPagePro
               <div className="space-y-4">
                 <div>
                   <p className="text-sm font-bold">FULL NAME</p>
-                  <p className="text-lg">{profile.full_name}</p>
+                  <p className="text-lg break-words">{profile.full_name}</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold">EMAIL</p>
-                  <p className="text-lg">{profile.email}</p>
+                  <p className="text-lg break-all">{profile.email}</p>
                 </div>
                 <div>
                   <p className="text-sm font-bold">PHONE</p>
-                  <p className="text-lg">{profile.phone || 'Not set'}</p>
+                  <p className="text-lg break-all">{profile.phone || 'Not set'}</p>
                 </div>
                 <button onClick={() => setEditingProfile(true)} className="nb-button px-6 py-2">EDIT PROFILE</button>
               </div>

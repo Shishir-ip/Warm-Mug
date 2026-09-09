@@ -417,7 +417,7 @@ function CampaignsTab({ campaigns, products, onAdd, onEdit, onDelete, onToggleAc
                             isSelected ? 'bg-[var(--accent-green)]' : 'hover:bg-[var(--bg-secondary)]'
                           }`}
                         >
-                          <img src={product.image} alt={product.name} className="w-full h-20 object-cover mb-2" />
+                          <img src={product.image_url} alt={product.name} className="w-full h-20 object-cover mb-2" />
                           <p className="text-xs font-bold line-clamp-2">{product.name}</p>
                           <p className="text-xs text-[var(--text-muted)]">${product.price}</p>
                           {isSelected && (
@@ -1247,7 +1247,7 @@ export default function AdminDashboard({ onBack }: AdminDashboardProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {products.map(product => (
                 <div key={product.id} className="nb-card overflow-hidden">
-                  <img src={product.image} alt={product.name} className="w-full h-48 object-cover border-b-2 border-[var(--border-color)]" />
+                  <img src={product.image_url} alt={product.name} className="w-full h-48 object-cover border-b-2 border-[var(--border-color)]" />
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="nb-badge text-xs">{product.category}</span>

@@ -20,7 +20,7 @@ export interface Product {
   roast: string;
   notes: string[];
   weight: string;
-  image: string;
+  image_url: string;
   rating: number;
   reviews: number;
   is_active: boolean;

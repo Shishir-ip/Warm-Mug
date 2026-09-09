@@ -89,7 +89,7 @@ export default function CampaignPage({ campaignId, onBack, onAddToCart, onViewPr
           originalPrice: p.original_price,
           discountType: p.discount_type,
           discountValue: p.discount_value,
-          image: p.image,
+          image: p.image_url || p.image || '',
           category: p.category,
           origin: p.origin,
           roast: p.roast,
@@ -201,7 +201,7 @@ export default function CampaignPage({ campaignId, onBack, onAddToCart, onViewPr
                   onClick={() => onViewProduct(product)}
                 >
                   <img
-                    src={product.image}
+                    src={product.image || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect fill="%23ddd" width="400" height="400"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E'}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
