@@ -75,7 +75,8 @@ export default function UserAccountPage({ onBack, onLogout }: UserAccountPagePro
       const user = authData?.user;
       if (!user) return;
 
-      const { error } = await supabase
+      // Try to update first, if it fails (no profile exists), insert instead
+      const { error: updateError } = await supabase
         .from('user_profiles')
         .update({
           full_name: profileForm.full_name,
@@ -83,7 +84,19 @@ export default function UserAccountPage({ onBack, onLogout }: UserAccountPagePro
         })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (updateError) {
+        // Profile doesn't exist, create it
+        const { error: insertError } = await supabase
+          .from('user_profiles')
+          .insert([{
+            id: user.id,
+            email: user.email,
+            full_name: profileForm.full_name,
+            phone: profileForm.phone || null,
+          }]);
+
+        if (insertError) throw insertError;
+      }
 
       setEditingProfile(false);
       fetchUserData();
@@ -162,12 +175,28 @@ export default function UserAccountPage({ onBack, onLogout }: UserAccountPagePro
       </div>
 
       {/* Profile Tab */}
-      {activeTab === 'profile' && profile && (
+      {activeTab === 'profile' && (
         <div className="m-4">
           <div className="nb-card p-6">
             <h2 className="nb-heading text-xl mb-4">PROFILE INFORMATION</h2>
             
-            {editingProfile ? (
+            {loading ? (
+              <div className="text-center py-8">
+                <p className="text-lg font-bold">Loading profile...</p>
+              </div>
+            ) : !profile ? (
+              <div className="text-center py-8">
+                <User className="w-16 h-16 mx-auto mb-4 opacity-30" strokeWidth={3} />
+                <p className="text-lg font-bold mb-2">No profile found</p>
+                <p className="text-sm text-[var(--text-muted)] mb-4">Please complete your profile information</p>
+                <button 
+                  onClick={() => setEditingProfile(true)} 
+                  className="nb-button px-6 py-2"
+                >
+                  CREATE PROFILE
+                </button>
+              </div>
+            ) : editingProfile ? (
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div>
                   <label className="block text-sm font-bold mb-2">FULL NAME</label>

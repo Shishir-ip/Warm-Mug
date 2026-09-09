@@ -3,6 +3,7 @@ import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { Sun, Moon, ShoppingBag, Coffee, User, Search, X, Plus, Minus, Trash2, Grid, List, Star, MapPin, Flame, Shield, LogIn } from 'lucide-react';
 import CheckoutPage from './pages/CheckoutPage';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminLogin from './pages/AdminLogin';
 import AuthPage from './pages/AuthPage';
 import UserAccountPage from './pages/UserAccountPage';
 import { supabase } from './lib/supabase';
@@ -642,6 +643,40 @@ function AppContent() {
   }
 
   if (currentPage === 'admin') {
+    // Check if user is authenticated and has admin role
+    if (!currentUser) {
+      return (
+        <AdminLogin
+          onBack={() => setCurrentPage('home')}
+          onAdminLogin={() => {
+            // Reload current user to get admin status
+            supabase.auth.getUser().then(({ data }) => {
+              if (data?.user) {
+                setCurrentUser(data.user);
+              }
+            });
+          }}
+        />
+      );
+    }
+
+    // Check if user has admin role
+    const checkAdmin = async () => {
+      const { data: adminProfile } = await supabase
+        .from('admin_profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
+
+      if (!adminProfile) {
+        // Not an admin, redirect to home
+        setCurrentPage('home');
+        alert('Access denied. You do not have admin privileges.');
+      }
+    };
+
+    checkAdmin();
+
     return (
       <AdminDashboard
         onBack={() => setCurrentPage('home')}
