@@ -1,1 +1,285 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ============================================
+   NEO-BRUTALISM THEME SYSTEM
+   ============================================ */
+
+:root {
+  /* Light Mode Colors */
+  --bg-primary: #fef3c7;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #fde68a;
+  --bg-accent: #fbbf24;
+  
+  --text-primary: #1a1a1a;
+  --text-secondary: #404040;
+  --text-muted: #666666;
+  
+  --border-color: #1a1a1a;
+  --border-width: 3px;
+  
+  --shadow-hard: 6px 6px 0px #1a1a1a;
+  --shadow-hard-lg: 8px 8px 0px #1a1a1a;
+  --shadow-hard-sm: 4px 4px 0px #1a1a1a;
+  
+  --accent-yellow: #fbbf24;
+  --accent-pink: #ec4899;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-purple: #8b5cf6;
+  
+  --card-bg: #ffffff;
+  --button-bg: #fbbf24;
+  --button-hover: #f59e0b;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --bg-accent: #fbbf24;
+  
+  --text-primary: #fef3c7;
+  --text-secondary: #d4d4d4;
+  --text-muted: #a3a3a3;
+  
+  --border-color: #fef3c7;
+  
+  --shadow-hard: 6px 6px 0px #fef3c7;
+  --shadow-hard-lg: 8px 8px 0px #fef3c7;
+  --shadow-hard-sm: 4px 4px 0px #fef3c7;
+  
+  --card-bg: #2d2d2d;
+  --button-bg: #fbbf24;
+  --button-hover: #f59e0b;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================
+   NEO-BRUTALISM COMPONENTS
+   ============================================ */
+
+.nb-card {
+  background-color: var(--card-bg);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-hard);
+  transition: all 0.2s ease;
+}
+
+.nb-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard-lg);
+}
+
+.nb-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.nb-button {
+  background-color: var(--button-bg);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-hard-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.nb-button:hover {
+  background-color: var(--button-hover);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard);
+}
+
+.nb-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.nb-button-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-hard-sm);
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.nb-button-secondary:hover {
+  background-color: var(--bg-tertiary);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hard);
+}
+
+.nb-input {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-hard-sm);
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.nb-input:focus {
+  outline: none;
+  background-color: var(--bg-tertiary);
+  box-shadow: var(--shadow-hard);
+}
+
+.nb-input::placeholder {
+  color: var(--text-muted);
+}
+
+.nb-badge {
+  background-color: var(--accent-yellow);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.nb-badge-pink {
+  background-color: var(--accent-pink);
+  color: white;
+}
+
+.nb-badge-blue {
+  background-color: var(--accent-blue);
+  color: white;
+}
+
+.nb-badge-green {
+  background-color: var(--accent-green);
+  color: white;
+}
+
+.nb-badge-red {
+  background-color: var(--accent-red);
+  color: white;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+.nb-heading {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.nb-subheading {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes bounce-in {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { transform: scale(1.05); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes flyToCart {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(calc(var(--end-x) * 0.5), calc(var(--end-y) * 0.5 - 100px)) scale(0.8);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--end-x), var(--end-y)) scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes shrinkRotate {
+  0% {
+    transform: scale(1) rotate(0deg);
+    border-radius: 0.5rem;
+  }
+  50% {
+    transform: scale(0.8) rotate(180deg);
+    border-radius: 50%;
+  }
+  100% {
+    transform: scale(0.3) rotate(360deg);
+    border-radius: 50%;
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.5s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--button-bg);
+  border: 2px solid var(--border-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--button-hover);
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+
+::selection {
+  background-color: var(--accent-yellow);
+  color: var(--text-primary);
+}
